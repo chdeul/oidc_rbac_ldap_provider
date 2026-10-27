@@ -1,0 +1,16 @@
+database:
+  host:     "localhost"
+  port:     "389"
+  root:     "dc=ldap,dc=example,dc=org"
+annuary:
+  users:
+    scope: Children     # or BaseObject SingleLevel  WholeSubtree 
+    path: "ou=users"
+    search: "(&(objectClass=inetOrgPerson)(sn=%s))"
+    fields: "uid|sn|cn|mail|title"  # In order: Uid|Identifiant|NomComplet|AdresseMail|Roles
+  group:
+    scope: SingleLevel     
+    path: "ou=groups"
+    search: "(&(objectClass=groupOfNames)(cn=%s))"
+    member: "member"
+    mpath:  "%s"          # member to member path

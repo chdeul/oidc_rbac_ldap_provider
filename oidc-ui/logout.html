@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+
+    <!-- Informations -->
+    <title>Agréments</title>
+    <meta name="description" content="Agréments SSO, Droits centralisés, Ldap, OpenID connect">
+    <meta name="keywords" content="Golang, Oidc">
+    <meta name="author" content="Ch'deul lo fé !">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+           
+    <!-- logo icone -->
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+
+    <link rel="stylesheet" href="logout.css">
+    <script src="logout.js"></script>
+
+</head>
+
+<body>
+    <div>
+        <div class="centre">
+            <img class="logo" src="logo.png"/>
+        </div>
+        <div class="centre">
+            <span class="titre">Agréments</span>
+        </div>
+        <div class="info centre">
+            <span class="message">Connexion close</span>
+        </div>
+
+        <!-- Message d'erreur Rouge -->
+        <div class="centre error">
+            <span id="msg-erreur"></span>
+        </div>
+    </div>
+    <script>init()</script>
+</body>
+
+</html>

@@ -1,0 +1,49 @@
+html  {
+    /* fonte un peu grande */
+    height: 100%;
+    font-size:20px;
+    margin: 0;
+}
+body {
+    /* centré sur la page */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width:100%;
+    height:100%;
+    margin:0px;
+    padding:0px;
+    background-color:#fdf8f5;
+}
+div {
+    padding: 4px;
+}
+.centre {
+    /* alignement centré */
+    width:100%;
+    display:inline-block;
+    text-align: center;
+}
+.titre {
+    /* titre de couleur accordée au fond et au logo */
+    font-size: 200%;
+    font-weight: bold;
+    color: #502020;
+}
+.info {
+    /* message d'info sous le logo */
+    color: black;
+    padding-top: 5px;
+    padding-bottom: 15px;
+}
+.logo {
+    /* taille logo */
+    width: 160px;
+    opacity: 1.0;
+}
+.error {
+    /* Message d'erreur en rouge */
+    color: red;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}

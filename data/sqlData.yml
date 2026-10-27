@@ -1,0 +1,26 @@
+database:
+  driver:   "postgres"
+  host:     "localhost"
+  port:     "5432"
+  user:     "antoine"
+  password: "chdeul"
+  dbname:   "test"
+annuary:
+  users: |
+    SELECT 
+      id as Uid,
+      ident as Identifiant, 
+      name as NomComplet, 
+      email as AdresseMail, 
+      roles as Roles 
+    FROM public.users 
+    WHERE ident like $1
+  group: |
+    SELECT 
+      uid as Uid,
+      ident as Identifiant, 
+      name as NomComplet, 
+      email as AdresseMail, 
+      roles as Roles  
+    FROM public.users 
+    WHERE POSITION($1 IN roles) > 0

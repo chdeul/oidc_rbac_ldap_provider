@@ -1,0 +1,46 @@
+routes:  
+  - source:
+      method: GET
+      path : users/{id}
+    target:
+    - method: GET
+      url: http://localhost:8008/agrem/csv/users/{id}       
+      header: 
+        PRIVATE_TOKEN: Good
+      jsscript: "data/restApi.js"
+      maparray: ""
+      mapobject:
+        Uid: "Uid"
+        Identifiant: "Identifiant"
+        NomComplet: "NomComplet"
+        AdresseMail: "AdresseMail"
+        Roles: "Roles"
+  - source:
+      method: GET
+      path : group/{id}
+    target:
+    - method: GET
+      url: http://localhost:8008/agrem/csv/group/{id}       
+      header: 
+        PRIVATE_TOKEN: Good
+      maparray: ""
+      mapobject:
+        Uid: "Uid"
+        Identifiant: "Identifiant"
+        NomComplet: "NomComplet"
+        AdresseMail: "AdresseMail"
+        Roles: "Roles"
+
+
+# Gitlab "https://gitlab.loc/api/v4/users?per_page=100&page=1  ?username=toto"  
+# header: "PRIVATE-TOKEN: xxxxx"
+# Gitlab reponse
+#[
+#  {
+#    "username": "john_smith",
+#    "name": "John Smith",
+#    "state": "active",
+#    "mail": ""
+#    "administrator": false
+#  },
+#]

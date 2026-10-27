@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+
+        <!-- Informations -->
+        <title>Agréments</title>
+        <meta name="description" content="Agréments SSO, Droits centralisés, Ldap, OpenID connect">
+        <meta name="keywords" content="Vue 3, Golang, Bootstrap 5">
+        <meta name="author" content="Ch'viu ch'deul lo fé, sac eun din !">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+              
+        <!-- logo icone  "../"" because of /vue/home : virtual workdir /vue -->
+        <link rel="icon" type="image/x-icon" href="../resources/img/favicon.png">
+        
+        <!-- CDN https://unpkg.com/vue 3.5.25 -->
+        <script src="resources/js/vue.global.prod.js"></script>
+
+        <!-- CDN https://unpkg.com/vue-router 4.0.13 -->
+        <script src="resources/js/vue-router.global.prod.js"></script>
+
+        <!-- CDN https://unpkg.com/axios 1.13.2 -->
+        <script src="resources/js/axios.min.js"></script>
+
+        <!-- CDN https://unpkg.com/font-awesome@4.7.0  4.7.0 -->
+        <link rel="stylesheet" href="resources/css/font-awesome.min.css">
+
+        <!-- CDN https://unpkg.com/bootstrap@next 5.3.8   popper@next 2.9.2 -->
+        <link rel="stylesheet" href="resources/css/bootstrap.min.css">
+        <script src="resources/js/popper.min.js"></script>
+        <script src="resources/js/bootstrap.min.js"></script>
+
+         <!-- CDN https://unpkg.com/moment@next  2.30.1  -->
+         <script src="resources/js/moment.min.js"></script>
+         <script src="resources/js/locale/fr.js"></script>
+ 
+        <!-- Nos css globaux -->
+        <link rel="stylesheet" href="resources/css/global.css">
+        <script src="resources/js/global.js"></script>
+
+    </head>
+
+    <body>
+        <div id="app">
+            <!-- Message/splash screen initial -->
+            <h4>Chargement en cours...</h4>
+        </div>
+
+        <button id="backToTop">↑</button>
+
+        <!-- Les composants vue3.js : embed -->
+
+        <!-- Template de la single page, $root -->
+        <v-embed src="vues/app.vue"></v-embed>
+     
+        <!-- General -->
+        <v-embed src="vues/Public/header.vue"></v-embed>
+        <v-embed src="vues/Public/home.vue"></v-embed>
+        <v-embed src="vues/tags.vue"></v-embed>
+        <v-embed src="vues/Edition/tableau.vue"></v-embed>
+
+        <!-- Authentification -->
+        <v-embed src="vues/Auth/error.vue"></v-embed>
+        <v-embed src="vues/Auth/login.vue"></v-embed>
+        <v-embed src="vues/Auth/logout.vue"></v-embed>
+        <v-embed src="vues/Auth/renew.vue"></v-embed>
+
+        <!-- Administration -->
+        <v-embed src="vues/Admin/ldapag.vue"></v-embed>
+        <v-embed src="vues/Admin/refbrowse.vue"></v-embed>
+        <v-embed src="vues/Admin/outils.vue"></v-embed>
+        <v-embed src="vues/Admin/projet.vue"></v-embed>
+
+        <!-- Vue router et lance le vue.app -->
+        <v-embed src="vues/routes.vue"></v-embed>
+
+        <!-- Avoid <script> in body -->
+
+    </body>
+</html>

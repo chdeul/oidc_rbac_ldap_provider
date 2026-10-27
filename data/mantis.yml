@@ -1,0 +1,4 @@
+baseurl: "http://localhost:8086/mantis/api/rest"
+headauth: R093TC7KCZYzWFCgMYLashlbpJ9tnoCL
+certfile: ""
+insecure: true

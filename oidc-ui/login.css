@@ -1,0 +1,90 @@
+/* TODO Plusieurs themes sepia foral, design cold, white basic */
+
+html  {
+    /* fonte un peu grande */
+    height: 100%;
+    font-size:20px;
+    margin: 0;
+}
+body {
+    /* centré sur la page */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width:100%;
+    height:100%;
+    margin:0px;
+    padding:0px;
+    background-color:#fdf8f5;
+}
+input {
+    /* fonte un peu grande */
+    font-size:18px ! important;
+}
+div {
+    padding: 4px;
+}
+.centre {
+    /* alignement centré */
+    width:100%;
+    display:inline-block;
+    text-align: center;
+}
+.password-eye {
+    /* svg décalé pour recouvrir la fin du input */
+    opacity:0.3;
+    margin-bottom:-0.4em;
+    margin-left:-2.0em;
+}
+.form-label {
+    display: inline-block;
+    width: 12em;
+}
+.form-control {
+    width: 24em;
+}
+.error {
+    /* Message d'erreur en rouge */
+    color: red;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.actif:hover {
+    /* bouton bleu foncé au survol */
+    color: darkblue;
+    cursor: pointer ! important;
+    opacity: 1.0;
+}
+.checkbox {
+    margin-top:5px;
+    margin-right:0px;
+    accent-color: #fdf8f5;
+}
+.bouton {
+    font-size: 120%;
+    width: 10em;
+    margin-left: 1em;
+    margin-right: 1em;
+}
+.titre {
+    /* titre de couleur accordée au fond et au logo */
+    font-size: 200%;
+    font-weight: bold;
+    color: #502020;
+}
+.info {
+    /* message d'info sous le logo */
+    color: black;
+    padding-top: 5px;
+    padding-bottom: 15px;
+}
+.logo {
+    /* taille logo */
+    width: 160px;
+    opacity: 1.0;
+}
+.estompe {
+    /* toggles peu utilisés : estompé */
+    opacity: 0.2;
+    font-size: 75%;
+}

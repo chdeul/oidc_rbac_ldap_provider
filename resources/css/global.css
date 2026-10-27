@@ -1,0 +1,151 @@
+.red {
+    color: red;
+}
+.gras {
+    font-weight: bold;
+}
+.montant  {
+    text-align : right;
+}
+.montant span {
+    padding-right:24px;
+}
+.marge-haut {
+    margin-top: 2em;
+}
+.center {
+    text-align:center
+}
+caption.titre_tab {
+    caption-side: top;
+    font-weight: bold;
+    font-size: 110%;
+}
+.tr_bold2 td {
+    font-weight: bold;
+    color: white !important;
+    background-color: rgb(85, 84, 84);
+}
+.tr_bold1 td {
+    font-weight: bold;
+    background-color: lightgrey;
+}
+.tr_bold0 td {
+    font-weight: bold;
+    background-color: white;
+}
+.tr_bold1 {
+    border-bottom: 16px solid white;
+}
+
+.tr_bold td {
+    font-style: italic;
+    font-size: 90%;
+    color: darkgrey !important;
+    background-color: rgb(241, 241, 241);
+}
+
+.tr_light td {
+    text-align: center;
+    color: darkgrey !important;
+    font-size: 80%;
+}
+
+.col-icon {
+  width: 50px;
+  text-align: center;
+}
+
+.ptr {
+    cursor : pointer
+}
+
+a {
+   text-decoration: none; /* enlève le soulignement */ 
+   color: inherit; /* garde la couleur du texte normal */ 
+}
+a:hover { 
+    color: blue; /* devient bleu au survol */ 
+}
+label:hover { 
+    color: blue; /* devient bleu au survol */ 
+}
+
+.message {
+  white-space : pre-line;
+  position : fixed;
+  top : 5em;
+  right : 1em;
+  padding : 10px 20px;
+  background : #403f3fff;
+  color : white;
+  border-radius : 5px;
+  box-shadow : 0 2px 6px rgba(0,0,0,0.3);
+  z-index : 9999;
+  opacity : 0;
+  transition : opacity 0.3s;
+}
+
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* Le point important : bloque les clics */
+  pointer-events: auto;
+}
+
+.modale {
+    min-width: 250px;
+    max-width: 800px;
+    padding : 20px;
+    background : #403f3fff;
+    color : white;
+    border-radius : 10px;
+    box-shadow : 0 5px 12px rgba(0,0,0,0.6);
+}
+.modale::before {
+  content: "> Confirmation";
+  font-size:larger;
+  font-weight: bold;
+  color: white;
+}
+.modale button {
+    float: right;
+    background : rgb(218, 218, 218);
+    padding: 6px 16px;
+    margin: 4px;
+}
+/* .modale button:last-child {
+    background : rgb(248, 225, 225);
+} */
+.modale p {
+  padding-top: 5px;
+}
+
+#backToTop {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 0px 6px;
+  font-size: 20px;
+  border: none;
+  border-radius: 4px;
+  background-color: #f1f1f1;
+  color: black;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+#backToTop.show {
+  opacity: 1;
+  pointer-events: auto;
+} 

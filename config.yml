@@ -1,0 +1,100 @@
+### Fichier de configuration - Agrements ###
+logging: Debug
+logtime: false
+
+batch:
+  active: false
+
+ # Http Service 
+server:
+  listenip: 0.0.0.0
+  port: 8008   
+  protocol: http
+  #certfile: server-chain.crt
+  #keyfile: server.key
+  backurl: http://localhost:8008 
+  usedurl: https://localhost:8443
+  tokensecret: MonPrecieux 
+  smtp:
+    ident: mailpit
+    password: chdeul
+    host:  localhost    # local mailpit
+    port:  1025
+    # note: Auth SMTP Plain on StartTLS
+
+# Référentiel - Annuaire d'entreprise
+ref:
+  type: file
+  path: data/users.csv
+  filters:
+    group_xxxx : "@xxxx.com|@xxxxzzzz.com" 
+    group_yyyy : "! @masociete.fr"
+
+# Destinations - Applications controlées
+dest:
+  ldap:
+    url: ldap://localhost:389
+    root: dc=ldap,dc=example,dc=org
+    passwd: admin123
+
+# Interface d'administration
+webui:
+  active: true
+  contextpath: /agrem
+  cache: false   # Dev mode
+  csvapi: true
+  login:
+    active: false        # else openidc client active 
+    agecookie: session  # or age in seconds 43200=12h
+
+# Openid connect
+openidc:
+  #
+  # Connect to SSO (myself or other)...
+  client:
+    active: true
+    issuer: http://localhost:8008/oidc # /.well-known/openid-configuration    
+    ident: agrements
+    secret: amboise
+    callback: https://localhost/client/callback
+    #postlogout: https://localhost/agrem/vue/home
+    frontlogout: https://localhost/client/logout
+    loginpath: /client/login
+    scope: [ "openid", "profile", "email", "role" ]  
+    authmethod: query   # or fragment or form_post 
+    uidfield: sub       # or preferred_username
+    agecookie: session  # or age in seconds 43200=12h
+    createuser: false   # auto create user in ldap
+    rootca: rootCA.pem
+  
+  # Serve as SSO oidc  on UsedUrl
+  server:
+    active: true
+    contextpath: /oidc        # sso api context
+    ssouipath: /oidc-ui       # sso ui context
+    formlogin : /login.html   # sso login page
+    logoutpath: /logout.html  # default si pas redirection spécifiée
+    
+    # Liste des clients autorisés à l'utiliser
+    registered:
+      - ident: agrements
+        secret: amboise
+        callback: https://localhost:8443/client/callback
+        #postlogout: https://localhost/agrem/vue/home
+        frontlogout: https://localhost:8443/client/logout
+      #- ident: gitlab
+      #  secret: MonPrecieux
+      #  callback : "https://localhost/gitlab/users/auth/openid_connect/callback"
+      #  #postlogout: ""
+      #  frontlogout: https://localhost/gitlab/users/sign_out
+      - ident: frontal
+        secret: lusseaux
+        callback : "https://localhost:8443/frontal/callback"   
+        frontlogout : "https://localhost:8443/frontal/logout"   
+      #  #postlogout: ""
+        
+# Oidc Managed scopes and claims :
+# scopes: openid, profile,  email,  role 
+# claims: Subject, Email, PreferredUsername, Name, Roles
+
+

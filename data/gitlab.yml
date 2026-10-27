@@ -1,0 +1,4 @@
+baseurl: "https://gitlab.loc:8888/api/v4"
+headauth: "glpat-Q5etHm9n57pu2acO1Lofm286MQp1OjEH.01.0w0k107yg"
+certfile: "/etc/gitlab/ssl/gitlab.loc.crt"
+insecure: true

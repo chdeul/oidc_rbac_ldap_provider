@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+
+    <!-- Informations -->
+    <title>Agréments</title>
+    <meta name="description" content="Agréments SSO, Droits centralisés, Ldap, OpenID connect">
+    <meta name="keywords" content="Golang, Oidc">
+    <meta name="author" content="Ch'deul lo fé !">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+            
+    <!-- logo icone -->
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+
+    <link rel="stylesheet" href="login.css">
+    <script src="login.js"></script>
+
+</head>
+
+<body>
+    <div>
+        <!-- LOGO -->
+        <div class="centre">
+            <img class="logo" src="logo.png"/>
+        </div>
+        <!-- TITRE -->
+        <div class="centre">
+            <span class="titre">Agréments</span>
+        </div>
+        <!-- Message INFO -->
+        <div class="info centre">
+            <span class="message">Outil de gestion des droits, utilisateurs et projets</span>
+        </div>
+        
+        <!-- Formulaire 3 fonctions : Login, Renouvellement ou Nouveau de mot de passe -->
+        <form id="formulaire" method="POST" action="./auth/login" autocomplete="on" onsubmit="return valider()" >
+
+            <!-- [ Identifiant ], ou Email -->
+            <div class="centre">
+                <label for="identifiant" id="label-identifiant" class="form-label">Identifiant ou E-mail</label>
+                <input type="text" id="identifiant" name="Identifiant" class="form-control" autocomplete="username" value="">
+
+                <!-- [ RequestID ] reçu et retourné dans les datas du formulaire -->
+                <input type="hidden" id="request-id" name="RequestId" value="">
+            </div>
+
+            <!-- [ MotDePasse ], Token ou Nouveau mot de passe -->
+            <div class="centre">
+                <label for="motdepasse" id="libelle-mdp" class="form-label">Mot de passe ou Token</label>
+                <input type="password" id="motdepasse" name="MotDePasse" class="form-control" autocomplete="current-password" value="">
+
+                <svg width="32px" height="24px" viewBox="0 0 24 24" role="img" class="password-eye actif" onclick="montrePswd()">
+                    <title>Show password</title>
+                    <g><image href="eye.svg" width="24" height="24" /></g>
+                </svg>
+
+            </div>
+
+            <!-- 2 Toggles estompés : Mot de passe oublié (Demande Renouvellement)   et  Se souvenir (autocomplete) -->
+            <div class="centre">
+                <span class="form-control" id="perdu" style="white-space: nowrap;padding-left:16px" >
+                    <input type="checkbox" class="checkbox actif" id="oublie" onchange="renouvellePswd(this)">
+                    <label for="oublie" class="estompe actif"> Oublié </label>
+                    <span> &nbsp; &nbsp; &nbsp; </span>
+                    <input type="checkbox" class="checkbox actif" id="souvenir" checked onchange="souviensToi(this)">
+                    <label for="souvenir" class="estompe actif"> Se souvenir </label>
+                </span>
+            </div>
+
+            <!-- Message d'erreur Rouge -->
+            <div class="centre error">
+                <span id="msg-erreur"></span>
+            </div>
+
+            <!-- Bouton de validation 3 fonctions : Login ou Envoi Mail renouvellement ou Nouveau mot de passe -->
+            <div class="centre">
+                <button type="submit" id="connect-but" class="bouton actif">Connexion</button> 
+                <!-- &nbsp; <button type="button" class="bouton actif" onclick="history.back()" >Annuler</button> -->
+            </div>
+
+        </form>
+
+    </div>
+     <script>init()</script>
+</body>
+
+</html>
