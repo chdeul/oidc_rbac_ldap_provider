@@ -24,7 +24,7 @@
 
     // Vue router en mode web path  ( not #mark ) 
     var router = VueRouter.createRouter({
-      history: VueRouter.createWebHistory( contextPath ),
+      history: VueRouter.createWebHistory( ContextPath ),
       routes: routes
     })
 
@@ -57,5 +57,5 @@
  
     })
     
-//# sourceURL=http://localhost.vue/vues/routes.vue
+//# sourceURL=http://localhost:8080/vues/routes.vue
 </script>

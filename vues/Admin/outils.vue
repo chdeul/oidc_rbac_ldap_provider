@@ -48,7 +48,7 @@
         }
 
      })
-//# sourceURL=http://localhost.vue/vues/Admin/outils.vue
+//# sourceURL=http://localhost:8080/vues/Admin/outils.vue
 </script>
 
 <template id="ui-outils">

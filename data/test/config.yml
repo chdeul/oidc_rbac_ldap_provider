@@ -1,0 +1,20 @@
+### Fichier de configuration - Agrements ###
+logging: Debug
+logtime: false
+
+# Référentiel - Annuaire d'entreprise
+ref:
+  type: file
+  path: ../data/test/users.csv
+  filters:
+    societe : "@xxxx.com|@zzzz.com" 
+    external : "! @localhost.loc"
+
+# Destinations - Applications controlées
+dest:
+  ldap:
+    url: ldap://localhost:389
+    root: dc=ldap,dc=example,dc=org
+    passwd: admin123
+
+

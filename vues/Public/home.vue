@@ -4,7 +4,7 @@
         template : "#ui-home" 
 
     })    
-//# sourceURL=http://localhost.vue/vues/Public/home.vue
+//# sourceURL=http://localhost:8080/vues/Public/home.vue
 </script>
 
 <template id="ui-home">

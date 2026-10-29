@@ -92,7 +92,7 @@
             }
         }      
     })
-//# sourceURL=http://localhost.vue/vues/Admin/refbrowse.vue
+//# sourceURL=http://localhost:8080/vues/Admin/refbrowse.vue
 </script>
 
 <template id="ui-refbrowse">

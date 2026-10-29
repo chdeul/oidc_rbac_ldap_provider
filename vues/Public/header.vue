@@ -2,7 +2,7 @@
     app.component("ui-header", {
         template: "#ui-header"
    });
-//# sourceURL=http://localhost.vue/vues/Public/header.vue
+//# sourceURL=http://localhost:8080/vues/Public/header.vue
 </script>
 
 <template id="ui-header">
@@ -12,7 +12,7 @@
     <div class="container-fluid">
 
       <!-- logo , home page -->
-      <a class="navbar-brand" href="#"><img src="resources/img/glue.png" height="40"/>&nbsp; Agréments </a>
+      <a class="navbar-brand" href="#"><img src="../resources/img/aglogo.png" height="40"/>&nbsp; Agréments </a>
 
       <!-- compact menu sur petit ecran -->
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">

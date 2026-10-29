@@ -110,20 +110,22 @@
                 return ret.replace(", ","")
             },
 
-            // Initialise le formulaie d'édition utilisateur
+            // Initialise le formulaire d'édition utilisateur
             init : function( edit ) {
                 this.isGroup = false
                 this.erreur = ""
                 this.$refs.Ident.readOnly = edit
                 this.$refs.Uid.readOnly = edit
                 this.$refs.Pass.readOnly = true
-                this.optPwd = "none"
+                this.optPwd = "none"               
+                this.$refs.PassBc.style.backgroundColor = ""                
+                this.$refs.VisiBc.style.backgroundColor = ""                
                 this.$refs.Pass.placeholder = "Crypté - SHA256"
                 this.user.MotDePasse == ""
                 this.modal.show()            
             },
 
-            // Initialise le formulaie d'édition d'un groupe
+            // Initialise le formulaire d'édition d'un groupe
             initGroup : function( edit ) {
                 this.isGroup = true
                 this.erreur = ""
@@ -173,8 +175,8 @@
                 this.erreur = ""
     
                 // Vérifications
-                if ( !this.user.Uid.match(/^[0-9]{2,12}$/) ) {
-                    this.erreur = "Id incorrect : 0-9 et taille 2 à 12 caractères"
+                if ( !this.user.Uid.match(/^[0-9]{1,12}$/) ) {
+                    this.erreur = "Id incorrect : 0-9 et taille 1 à 12 caractères"
                     return
                 }
                 
@@ -186,8 +188,8 @@
 
                 // this.MotDePasse si saisie  
                 if ( this.optPwd !== "none" ) {
-                    if ( !this.user.MotDePasse.match(/^[a-zA-Z0-9_!@#$%^&*()=+.?-]{8,64}$/) ) {
-                        this.erreur = "Mot de passe incorrect : 8 à 64 caractères, a-zA-Z0-9_!@#$%^&*()=+.?-"
+                    if ( !this.user.MotDePasse.match(/^[a-zA-Z0-9_!@#$%^&*()=+.?-]{6,64}$/) ) {
+                        this.erreur = "Mot de passe incorrect : 6 à 64 caractères, a-zA-Z0-9_!@#$%^&*()=+.?-"
                         return
                     }
 
@@ -344,7 +346,7 @@
         } 
             
     })
-//# sourceURL=http://localhost.vue/vues/Admin/ldapag.vue
+//# sourceURL=http://localhost:8080/vues/Admin/ldapag.vue
 </script>
 
 <template id="ui-ldapag">
@@ -444,10 +446,10 @@
                         <span class="input-group-text w-25">Mot de passe :</span>
                         <input type="password" class="form-control" v-model="user.MotDePasse" ref="Pass" readonly 
                             placeholder="Crypté - SHA256" autocomplete="new-password">   
-                        <button type="button" class="btn btn-light" @click="setCheckPwd($event)">
+                        <button type="button" class="btn btn-light" @click="setCheckPwd($event)" ref="PassBc">
                             <span class="fa fa-edit"></span>
                         </button>
-                        <button type="button" class="btn btn-light" @click="showPwd($event)">
+                        <button type="button" class="btn btn-light" @click="showPwd($event)" ref="VisiBc">
                             <span class="fa fa-eye"></span>
                         </button>
                     </div>

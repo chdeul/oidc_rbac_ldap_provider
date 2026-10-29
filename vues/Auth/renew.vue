@@ -77,7 +77,7 @@
             }
         }  
     })
-//# sourceURL=http://localhost.vue/vues/Auth/renew.vue
+//# sourceURL=http://localhost:8080/vues/Auth/renew.vue
 </script>
 
 <template id="ui-renew">

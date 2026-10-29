@@ -95,12 +95,12 @@ func MySendMail(from string, dest string, data []byte) error {
 
 	// Vérifier que le serveur supporte STARTTLS
 	if !strings.HasSuffix(smtpPort, "465") {
-		if ok, _ := c.Extension("STARTTLS"); !ok {
-			err = c.StartTLS(tlsConfig)
-			if err != nil {
-				return err
-			}
+		//if ok, _ := c.Extension("STARTTLS"); !ok {
+		err = c.StartTLS(tlsConfig)
+		if err != nil {
+			return err
 		}
+		//}
 	}
 	// Quels mécanismes : PLAIN  ( LOGIN, CRAM, XOAUTH2 : non géré ! )
 	if ok, mechs := c.Extension("AUTH"); ok {

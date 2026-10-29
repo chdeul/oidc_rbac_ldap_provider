@@ -22,7 +22,7 @@ func LdapOpen(url string, bind string, passwd string) (any, error) {
 	// Connection open
 	l, err := ldap.DialURL(url)
 	if l == nil || err != nil {
-		tools.Panic("LdapOpen: %v", err)
+		tools.Panic("LDAP Open: %v", err)
 		return l, err
 	}
 	// Absolute dn : "bind" is root dn of openldap
@@ -36,30 +36,14 @@ func LdapOpen(url string, bind string, passwd string) (any, error) {
 		// Bind with the admin dn
 		err = l.Bind(adminDn, adminPw)
 		if err == nil {
-			// Verifie si les Org.Unit existent
-			searchRequest := ldap.NewSearchRequest(bind,
-				ldap.ScopeSingleLevel, ldap.NeverDerefAliases, 0, 0, false,
-				"(objectClass=organizationalUnit)", []string{"ou"}, nil)
-			ou, er := l.Search(searchRequest)
-			// Si non : les crée
-			if er == nil && len(ou.Entries) == 0 {
-				// Add org.unit users
-				addRequest := ldap.NewAddRequest(usersDn, nil)
-				addRequest.Attribute("objectClass", []string{"organizationalUnit"})
-				addRequest.Attribute("ou", []string{"users"})
-				err = l.Add(addRequest)
-				// Add org.unit groups
-				addRequest = ldap.NewAddRequest(groupsDn, nil)
-				addRequest.Attribute("objectClass", []string{"organizationalUnit"})
-				addRequest.Attribute("ou", []string{"groups"})
-				err = l.Add(addRequest)
-			}
+			// Check expected schema
+			err = initSchema(l, bind)
 		}
 	} else { //  Read only
 		err = l.UnauthenticatedBind("")
 	}
 	if err != nil {
-		tools.Panic("LdapOpen: %v", err)
+		tools.Panic("LDAP Bind: %v", err)
 	}
 	return l, err
 }
@@ -71,6 +55,45 @@ func LdapClose(conn any) {
 	if l != nil {
 		l.Close()
 	}
+}
+
+func initSchema(l *ldap.Conn, bind string) error {
+
+	// Check if Org.Unit exist
+	searchRequest := ldap.NewSearchRequest(bind,
+		ldap.ScopeSingleLevel, ldap.NeverDerefAliases, 0, 0, false,
+		"(objectClass=organizationalUnit)", []string{"ou"}, nil)
+	ou, err := l.Search(searchRequest)
+
+	if err == nil {
+		// find it
+		foundUsers := false
+		foundGroups := false
+		for _, e := range ou.Entries {
+			if e.GetAttributeValue("ou") == "users" {
+				foundUsers = true
+			}
+			if e.GetAttributeValue("ou") == "groups" {
+				foundGroups = true
+			}
+		}
+		// Else create it
+		if !foundUsers {
+			tools.Info("LDAP Init Schema : Add org.unit users")
+			addRequest := ldap.NewAddRequest(usersDn, nil)
+			addRequest.Attribute("objectClass", []string{"organizationalUnit"})
+			addRequest.Attribute("ou", []string{"users"})
+			err = l.Add(addRequest)
+		}
+		if err == nil && !foundGroups {
+			tools.Info("LDAP Init Schema : Add org.unit groups")
+			addRequest := ldap.NewAddRequest(groupsDn, nil)
+			addRequest.Attribute("objectClass", []string{"organizationalUnit"})
+			addRequest.Attribute("ou", []string{"groups"})
+			err = l.Add(addRequest)
+		}
+	}
+	return err
 }
 
 // ------------------ Users ------------------
@@ -93,6 +116,7 @@ func LdapGetUserFromEmail(conn any, email string) *obj.User {
 
 	// Check pattern : email sans ( ) \
 	if strings.ContainsAny(email, "()\\") {
+		tools.Warn("LdapGetUserFromEmail: Malformed mail address")
 		return nil
 	}
 	// Recherche sur mail
@@ -113,6 +137,7 @@ func LdapSearch(conn any, pattern string) []*obj.User {
 
 	// Check pattern : identifiant + * , sans ( ) \
 	if strings.ContainsAny(pattern, "()\\") {
+		tools.Warn("LdapGetUserFromEmail: Malformed search pattern")
 		return nil
 	}
 	rech := fmt.Sprintf("(&(objectClass=inetOrgPerson)(sn=%s))", pattern)
@@ -130,7 +155,7 @@ func ldapSearchExpr(conn any, rech string) []*obj.User {
 	// Search for the matching usernames
 	sr, err := l.Search(searchRequest)
 	if err != nil {
-		tools.Error("ldapSearchExpr: %v", err)
+		tools.Error("ldapSearchExpr: error %v", err)
 		return nil
 	}
 
@@ -159,7 +184,7 @@ func LdapSetPassword(conn any, identifiant string, pass string) error {
 	// Set Password
 	_, err := l.PasswordModify(passwordRequest)
 	if err != nil {
-		tools.Error("LdapSetPassword: %v", err)
+		tools.Error("LdapSetPassword: error %v", err)
 	}
 	return err
 }
@@ -169,7 +194,7 @@ func LdapCheckPassword(url, bind, identifiant, passwd string) bool {
 	// Connection open
 	l, err := ldap.DialURL(url)
 	if l == nil || err != nil {
-		tools.Debug("LdapCheckPassword: %v", err)
+		tools.Debug("LdapCheckPassword: error  %v", err)
 		return false
 	}
 	defer l.Close()
@@ -199,7 +224,7 @@ func LdapAddUser(conn any, user *obj.User) error {
 	// Add user
 	err := l.Add(addRequest)
 	if err != nil {
-		tools.Error("LdapAdduser: %v", err)
+		tools.Error("LdapAdduser: error %v", err)
 	} else if user.MotDePasse != "" {
 		err = LdapSetPassword(conn, user.Identifiant, user.MotDePasse)
 	}
@@ -222,7 +247,7 @@ func LdapUpdateUser(conn any, user *obj.User) error {
 	// Modify attributes
 	err := l.Modify(modifyRequest)
 	if err != nil {
-		tools.Error("LdapUpdateUser: %v", err)
+		tools.Error("LdapUpdateUser: error %v", err)
 	}
 	return err
 }
@@ -244,7 +269,7 @@ func LdapSearchGroups(conn any, pattern string) []*obj.Project {
 	// Search for the given group
 	sr, err := l.Search(searchRequest)
 	if err != nil {
-		tools.Error("LdapSearchGroups: %v", err)
+		tools.Error("LdapSearchGroups: error %v", err)
 		return nil
 	}
 	// Transform to list of names
@@ -270,7 +295,7 @@ func LdapGetGroup(conn any, groupe string) []string {
 	// Search for the given group
 	sr, err := l.Search(searchRequest)
 	if err != nil {
-		tools.Error("LdapGetGroup: %v", err)
+		tools.Error("LdapGetGroup: error %v", err)
 		return nil
 	}
 
@@ -313,7 +338,7 @@ func LdapAddGroup(conn any, groupe, description string) error {
 	// Execute Add
 	err := l.Add(addRequest)
 	if err != nil {
-		tools.Error("LdapAddGroup: %v", err)
+		tools.Error("LdapAddGroup: error %v", err)
 	}
 	return err
 }
@@ -329,7 +354,7 @@ func LdapUpdateGroup(conn any, groupe, description string) error {
 	// Modify attributes
 	err := l.Modify(modifyRequest)
 	if err != nil {
-		tools.Error("LdapUpdateGroup: %v", err)
+		tools.Error("LdapUpdateGroup: error %v", err)
 	}
 	return err
 }
@@ -347,7 +372,7 @@ func LdapAddMember(conn any, groupe string, identifiant string) error {
 	// Execute le modify member
 	err := l.Modify(modifyRequest)
 	if err != nil {
-		tools.Error("LdapAddMember: %v", err)
+		tools.Error("LdapAddMember: error %v", err)
 	}
 	return err
 }
@@ -366,7 +391,7 @@ func LdapDeleteMember(conn any, groupe string, identifiant string) error {
 	// Execute le modify member
 	err := l.Modify(modifyRequest)
 	if err != nil {
-		tools.Error("LdapDeleteMember: %v", err)
+		tools.Error("LdapDeleteMember: error %v", err)
 	}
 	return nil
 }
@@ -381,7 +406,7 @@ func LdapDeleteGroup(conn any, groupe string) error {
 	// Execute le delete
 	err := l.Del(deleteRequest)
 	if err != nil {
-		tools.Error("LdapDeleteGroup: %v", err)
+		tools.Error("LdapDeleteGroup: error %v", err)
 	}
 	return err
 }
@@ -396,14 +421,14 @@ func LdapDeleteUser(conn any, identifiant string) error {
 	// Execute le delete
 	err := l.Del(deleteRequest)
 	if err != nil {
-		tools.Error("LdapDeleteUser: %v", err)
+		tools.Error("LdapDeleteUser: error %v", err)
 	}
 	// Delete this member of groups
 	groups := LdapGroupsWithMember(conn, identifiant)
 	for _, grp := range groups {
 		err2 := LdapDeleteMember(conn, grp, identifiant)
 		if err2 != nil {
-			tools.Error("LdapDeleteUser: %v", err2)
+			tools.Error("LdapDeleteUser: error %v", err2)
 		}
 	}
 	return err
@@ -422,7 +447,7 @@ func LdapGroupsWithMember(conn any, identifiant string) []string {
 	// Search for the given groups
 	sr, err := l.Search(searchRequest)
 	if err != nil {
-		tools.Error("LdapGroupsWithMember: %v", err)
+		tools.Error("LdapGroupsWithMember: error %v", err)
 		return nil
 	}
 	// Transform to list of names

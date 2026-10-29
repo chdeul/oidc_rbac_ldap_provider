@@ -68,7 +68,7 @@
             }
         }
     })
-//# sourceURL=http://localhost.vue/vues/tags.vue
+//# sourceURL=http://localhost:8080/vues/tags.vue
 </script>
 
 <template id="ui-tags">

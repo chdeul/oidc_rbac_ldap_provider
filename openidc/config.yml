@@ -2,7 +2,7 @@
 
  #  Web UI, SSO
 server:
-  port: 8008   
+  port: 8080  
 
 # client openid connect
 openidc:
@@ -10,7 +10,7 @@ openidc:
     issuer:     "https://oidctest.wsweet.org/" # .well-known/openid-configuration
     ident:      "private" 
     secret:     "tardis"
-    serverurl:  "http://localhost:8008"
+    serverurl:  "http://localhost:8080"
     callbackpath: "/openidc/callback"
     scope:      [ "openid", "profile", "email", "roles" ]
     authmethod: "query"  # or fragment or form_post 

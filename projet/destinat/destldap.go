@@ -50,7 +50,7 @@ func (de *DestLdap) GetRole(prj *obj.Project, user *obj.User) string {
 func (de *DestLdap) CreateRole(prj *obj.Project, user *obj.User, role string) error {
 
 	// role du projet : ajoute l'user au groupe du nom du projet
-	if role == "!project" {
+	if role == "groups" {
 		projname := prj.Identifiant
 		members := bases.LdapGetGroup(de.ldap, projname)
 		if members == nil {
@@ -65,7 +65,7 @@ func (de *DestLdap) CreateRole(prj *obj.Project, user *obj.User, role string) er
 			tools.Debug("LdapAddMember %s %s", projname, user.Identifiant)
 		}
 		// role "autre" que projet et users  : ajoute l'user à ce groupe "autre"
-	} else if role != "!user" && role != "" {
+	} else if role != "users" && role != "" {
 		members := bases.LdapGetGroup(de.ldap, role)
 		if members == nil {
 			// Crée le groupe pour l'ajouter membre
@@ -91,6 +91,7 @@ func (de *DestLdap) UpdateRole(prj *obj.Project, user *obj.User, role string) er
 func (de *DestLdap) DeleteRole(prj *obj.Project, user *obj.User) error {
 	projname := prj.Identifiant
 	bases.LdapDeleteMember(de.ldap, projname, user.Identifiant)
+	tools.Debug("LdapDeleteMember %s %s", projname, user.Identifiant)
 	return nil
 }
 
@@ -105,13 +106,19 @@ func (de *DestLdap) SearchUsers(id string) []*obj.User {
 }
 
 func (de *DestLdap) CreateUser(user *obj.User) error {
-	return bases.LdapAddUser(de.ldap, user)
+	u := bases.LdapAddUser(de.ldap, user)
+	tools.Debug("LdapAddUser %s", user.Identifiant)
+	return u
 }
 
 func (de *DestLdap) UpdateUser(user *obj.User) error {
-	return bases.LdapUpdateUser(de.ldap, user)
+	u := bases.LdapUpdateUser(de.ldap, user)
+	tools.Debug("LdapUpdateUser %s", user.Identifiant)
+	return u
 }
 
 func (de *DestLdap) DeleteUser(user *obj.User) error {
-	return bases.LdapDeleteUser(de.ldap, user.Identifiant)
+	u := bases.LdapDeleteUser(de.ldap, user.Identifiant)
+	tools.Debug("LdapDeleteUser %s", user.Identifiant)
+	return u
 }

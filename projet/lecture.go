@@ -58,12 +58,15 @@ func LectureProjet(filename string) {
 			// Trouvé
 			user := &users[0]
 
-			// TODO add role if
-			//if referent.IntoEmails(ref,user,"external") {
-			//	user.Roles += ",external"
-			//}
+			// add role if
+			if referent.IntoEmails(ref, user, "external") {
+				user.Roles += ",external"
+			}
 
-			updateRights(projet, user, dest, up.Tools)
+			switch up.Type[0] {
+			case 'U':
+				updateRights(projet, user, dest, up.Tools)
+			}
 
 		case "Group": // Déclare les groupes et leurs roles
 
@@ -92,7 +95,11 @@ func LectureProjet(filename string) {
 				//if referent.IntoEmails(ref,user,"external") {
 				//	user.Roles += ",external"
 				//}
-				updateRights(projet, &user, dest, up.Tools)
+
+				switch up.Type[0] {
+				case 'G':
+					updateRights(projet, &user, dest, up.Tools)
+				}
 			}
 
 		default:

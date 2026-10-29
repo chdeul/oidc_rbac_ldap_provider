@@ -79,7 +79,7 @@
             sso : function() {
                 			
                 // Redirigine ici après authent SSO
-			    const path = this.$root.contextPath + encodeURIComponent("/index.html?route=/vue/home")
+			    const path = ContextPath + encodeURIComponent("/index.html?route=/vue/home")
 
                 // Se logue sur le sso
                 window.location = this.cfg.OidcPath + "?redirect=" + path
@@ -109,7 +109,7 @@
             }
         } 
     })
-//# sourceURL=http://localhost.vue/vues/Auth/login.vue
+//# sourceURL=http://localhost:8080/vues/Auth/login.vue
 </script>
 
 <template id="ui-login">

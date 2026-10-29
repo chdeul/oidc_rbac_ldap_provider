@@ -86,6 +86,9 @@ func main() {
 		// Http server refresh and favoris of browser on /vue/* routes
 		http.Handle(path+"/vue/", http.StripPrefix(path+"/vue/", http.HandlerFunc(ServeVue)))
 
+		// Assemble la single page ( en prod 1 fois, en dev, une 1ere fois )
+		InitSpa()
+
 		// Point d'entree, Accueil ( single page, vues ) et autres  /  => /index.html
 		http.Handle(path+"/", http.StripPrefix(path+"/", http.HandlerFunc(ServeIndex)))
 		if path != "" {

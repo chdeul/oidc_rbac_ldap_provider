@@ -1,9 +1,9 @@
 <script>
 
- // DO NOT Touch : Value injected at backend !
- const ContextPath = ''
+    // DO NOT Touch : Value injected at backend !
+    const ContextPath = ''
 
-   // Config axios, appels ajax (xhr)
+    // Config axios, appels ajax (xhr)
     var myAxios = axios.create({ baseURL: ContextPath+'/api'})
 
     // Transmet le token d'authentication sur chaque requete axios
@@ -55,7 +55,6 @@
         // access by this.$root.xxx
         data : function() {
             return {
-                contextPath : contextPath,
                 logged : null,
                 profil : null
             }
@@ -146,7 +145,7 @@
         }
     }
 
-//# sourceURL=http://localhost.vue/vues/app.vue
+//# sourceURL=http://localhost:8080/vues/app.vue
 </script>
 
 <!-- template de la single page -->

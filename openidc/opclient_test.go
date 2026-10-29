@@ -24,7 +24,7 @@ func TestOidcClient(t *testing.T) {
 
 	// Serveur web à lancer
 	srv := &http.Server{
-		Addr:    ":8008",
+		Addr:    ":8080",
 		Handler: http.DefaultServeMux,
 	}
 
@@ -35,7 +35,7 @@ func TestOidcClient(t *testing.T) {
 	time.AfterFunc(1*time.Second, func() {
 
 		// Get Login path + redirect to sso  /authorize
-		resp, err := http.Get("http://localhost:8008/login")
+		resp, err := http.Get("http://localhost:8080/login")
 		if err != nil {
 			t.Fatalf("GET failed: %v", err)
 		}
@@ -62,7 +62,7 @@ func TestOidcClient(t *testing.T) {
 		data := "inProgress=1&url=aHR0cHM6Ly9vaWRjdGVzdC53c3dlZXQub3JnL29hdXRoMg%3D%3D&timezone=1&skin=oidctest&token=1773411293_27801&user=dwho&password=dwho"
 		data = strings.Replace(data, "1773411293_27801", c, 1)
 		resp, err = http.Post(
-			"https://oidctest.wsweet.org/oauth2/authorize?client_id=private&redirect_uri=http%3A%2F%2Flocalhost%3A8008%2Fopenidc%2Fcallback&response_mode=query&response_type=code&scope=openid+profile+email+roles&state=%2Fstate",
+			"https://oidctest.wsweet.org/oauth2/authorize?client_id=private&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fopenidc%2Fcallback&response_mode=query&response_type=code&scope=openid+profile+email+roles&state=%2Fstate",
 			"application/x-www-form-urlencoded",
 			strings.NewReader(data),
 		)
@@ -105,15 +105,15 @@ func TestOidcServer(t *testing.T) {
 	}
 	// Serveur web à lancer
 	srv := &http.Server{
-		Addr:    ":8008",
+		Addr:    ":8080",
 		Handler: nil,
 	}
 	// Déclenche le test dans 1 s
 	time.AfterFunc(1*time.Second, func() {
 
 		// Get Login path + redirect to sso  /authorize
-		// /authorize?client_id=sid1&redirect_uri=http%3A%2F%2Flocalhost%3A8008%2Fopenidc%2Fcallback&response_mode=query&response_type=code&scope=openid+profile+email+roles&state=%2Fstate
-		resp, err := http.Get("http://localhost:8008/authorize?client_id=sid1&redirect_uri=http%3A%2F%2Flocalhost%3A8008%2Fopenidc%2Fcallback&response_mode=query&response_type=code&scope=openid+profile+email+roles&state=%2Fstate")
+		// /authorize?client_id=sid1&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fopenidc%2Fcallback&response_mode=query&response_type=code&scope=openid+profile+email+roles&state=%2Fstate
+		resp, err := http.Get("http://localhost:8080/authorize?client_id=sid1&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fopenidc%2Fcallback&response_mode=query&response_type=code&scope=openid+profile+email+roles&state=%2Fstate")
 		if err != nil {
 			t.Fatalf("GET failed: %v", err)
 		}

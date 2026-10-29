@@ -104,14 +104,14 @@ func IntoEmails(ref Referentiel, user *obj.User, name string) bool {
 			// Matching suffixes
 			fils := strings.Split(v, "|")
 			for _, fi := range fils {
-				if strings.HasPrefix(fi, "!") {
+				if strings.HasPrefix(strings.TrimSpace(fi), "!") {
 					// Si matche le pattern négatif
-					if !strings.HasSuffix(user.AdresseMail, fi[1:]) {
+					if !strings.HasSuffix(user.AdresseMail, strings.TrimSpace(fi[1:])) {
 						return true
 					}
 				} else {
 					// Si matche le pattern
-					if strings.HasSuffix(user.AdresseMail, fi) {
+					if strings.HasSuffix(user.AdresseMail, strings.TrimSpace(fi)) {
 						return true
 					}
 				}

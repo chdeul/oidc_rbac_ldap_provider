@@ -56,7 +56,7 @@
         },
 
     })
-//# sourceURL=http://localhost.vue/vues/Edition/tableau.vue
+//# sourceURL=http://localhost:8080/vues/Edition/tableau.vue
 </script>
 
 <template  id="ui-tableau">

@@ -8,12 +8,12 @@ batch:
  # Http Service 
 server:
   listenip: 0.0.0.0
-  port: 8008   
+  port: 8080   
   protocol: http
   #certfile: server-chain.crt
   #keyfile: server.key
-  backurl: http://localhost:8008 
-  usedurl: https://localhost:8443
+  backurl: http://localhost:8080 
+  usedurl: http://localhost:8080
   tokensecret: MonPrecieux 
   smtp:
     ident: mailpit
@@ -44,7 +44,7 @@ webui:
   cache: false   # Dev mode
   csvapi: true
   login:
-    active: false        # else openidc client active 
+    active: true        # else openidc client active 
     agecookie: session  # or age in seconds 43200=12h
 
 # Openid connect
@@ -52,8 +52,8 @@ openidc:
   #
   # Connect to SSO (myself or other)...
   client:
-    active: true
-    issuer: http://localhost:8008/oidc # /.well-known/openid-configuration    
+    active: false
+    issuer: http://localhost:8080/oidc # /.well-known/openid-configuration    
     ident: agrements
     secret: amboise
     callback: https://localhost/client/callback
@@ -69,7 +69,7 @@ openidc:
   
   # Serve as SSO oidc  on UsedUrl
   server:
-    active: true
+    active: false
     contextpath: /oidc        # sso api context
     ssouipath: /oidc-ui       # sso ui context
     formlogin : /login.html   # sso login page

@@ -26,7 +26,7 @@
         }
 
      })
-//# sourceURL=http://localhost.vue/vues/Admin/projet.vue
+//# sourceURL=http://localhost:8080/vues/Admin/projet.vue
 </script>
 
 <template id="ui-projet">

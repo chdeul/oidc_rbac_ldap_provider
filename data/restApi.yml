@@ -4,7 +4,7 @@ routes:
       path : users/{id}
     target:
     - method: GET
-      url: http://localhost:8008/agrem/csv/users/{id}       
+      url: http://localhost:8080/agrem/csv/users/{id}       
       header: 
         PRIVATE_TOKEN: Good
       jsscript: "data/restApi.js"
@@ -20,7 +20,7 @@ routes:
       path : group/{id}
     target:
     - method: GET
-      url: http://localhost:8008/agrem/csv/group/{id}       
+      url: http://localhost:8080/agrem/csv/group/{id}       
       header: 
         PRIVATE_TOKEN: Good
       maparray: ""

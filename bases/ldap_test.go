@@ -2,6 +2,7 @@ package bases
 
 import (
 	obj "main/objets"
+	"main/tools"
 	"testing"
 )
 
@@ -10,96 +11,85 @@ import (
 // --env SLAPD_PASSWORD=admin123
 // --publish 389:389
 
-func TestLdap(t *testing.T) {
-
-	t.Run("step1", testLdap)
-
-	t.Run("clean", cleanLdap)
+func check(t *testing.T, val any, args ...any) {
+	if !tools.Assert(val, args) {
+		t.Fail()
+	}
 }
-
-func testLdap(t *testing.T) {
+func echeck(t *testing.T, val error, args ...any) {
+	if !tools.AssertError(val, args) {
+		t.Fail()
+	}
+}
+func TestLdap(t *testing.T) {
 	var l any
 	var e error
 
 	l, e = LdapOpen("ldap://localhost:389", "dc=ldap,dc=example,dc=org", "admin123")
-	if e != nil {
-		t.Fatal("-- LdapOpen failed")
-	}
-	e = LdapAddUser(l, &obj.User{Uid: "1", Identifiant: "utest", NomComplet: "Un Test", AdresseMail: "un.test@localhost.org"})
-	if e != nil {
-		t.Error("-- LdapAddUser failed")
-	}
+	check(t, l)
+	echeck(t, e)
+
+	e = LdapAddUser(l, &obj.User{Uid: "111", Identifiant: "utest", NomComplet: "Un Test", AdresseMail: "un.test@localhost.org"})
+	echeck(t, e)
+
 	e = LdapSetPassword(l, "utest", "AbcdEf=$123")
-	if e != nil {
-		t.Error("-- LdapSetPassword failed")
-	}
+	echeck(t, e)
+
 	LdapClose(l)
 	l, e = LdapOpen("ldap://localhost:389", "dc=ldap,dc=example,dc=org", "")
-	if e != nil {
-		t.Fatal("-- LdapOpen failed")
-	}
+	check(t, l)
+	echeck(t, e)
+
 	u := LdapGetUser(l, "utest")
-	if u == nil || u.NomComplet != "Un Test" || u.AdresseMail != "un.test@localhost.org" {
-		t.Error("-- LdapGetUser failed")
-	}
+	check(t, u != nil && u.NomComplet == "Un Test" && u.AdresseMail == "un.test@localhost.org")
+
 	ok := LdapCheckPassword("ldap://localhost:389", "dc=ldap,dc=example,dc=org", "utest", "AbcdEf=$123")
-	if !ok {
-		t.Error("-- LdapCheckPassword failed")
-	}
+	check(t, ok)
+
 	LdapClose(l)
 	l, e = LdapOpen("ldap://localhost:389", "dc=ldap,dc=example,dc=org", "admin123")
-	if e != nil {
-		t.Fatal("-- LdapOpen failed")
-	}
-	e = LdapUpdateUser(l, &obj.User{Uid: "1", Identifiant: "utest", NomComplet: "Un-Test", AdresseMail: "un.test@localhost.org"})
-	if e != nil {
-		t.Error("-- LdapUpdateUser failed")
-	}
+	check(t, l)
+	echeck(t, e)
+
+	e = LdapUpdateUser(l, &obj.User{Uid: "111", Identifiant: "utest", NomComplet: "Un-Test", AdresseMail: "un.test@localhost.org"})
+	echeck(t, e)
+
 	u = LdapGetUser(l, "utest")
-	if u == nil || u.NomComplet != "Un-Test" || u.AdresseMail != "un.test@localhost.org" {
-		t.Error("-- LdapUpdateUser failed")
-	}
+	check(t, u != nil && u.NomComplet == "Un-Test" && u.AdresseMail == "un.test@localhost.org")
+
 	e = LdapAddGroup(l, "UnGroupe", "description...")
-	if e != nil {
-		t.Error("-- LdapAddGroup failed")
-	}
+	echeck(t, e)
+
 	e = LdapAddMember(l, "UnGroupe", "utest")
-	if e != nil {
-		t.Error("-- LdapAddMember failed")
-	}
+	echeck(t, e)
+
 	m := LdapGetGroup(l, "UnGroupe")
-	if len(m) != 2 || m[1] != "utest" || m[0] != "admin" {
-		t.Error("-- LdapGetGroup failed")
-	}
+	check(t, len(m) == 2 && m[1] == "utest" && m[0] == "admin")
+
 	e = LdapDeleteMember(l, "UnGroupe", "utest")
-	if e != nil {
-		t.Error("-- LdapDeleteMember failed")
-	}
+	echeck(t, e)
+
 	m = LdapGetGroup(l, "UnGroupe")
-	if len(m) != 1 || m[0] != "admin" {
-		t.Error("-- LdapDeleteMember failed")
-	}
+	check(t, len(m) == 1 && m[0] == "admin")
+
 	e = LdapDeleteGroup(l, "UnGroupe")
-	if e != nil {
-		t.Error("-- LdapDeleteGroup failed")
-	}
+	echeck(t, e)
+
 	m = LdapGetGroup(l, "UnGroupe")
-	if len(m) != 0 {
-		t.Error("-- LdapDeleteGroup failed")
-	}
+	check(t, len(m) == 0)
+
 	e = LdapDeleteUser(l, "utest")
-	if e != nil {
-		t.Error("-- LdapLdapDeleteUserAddGroup failed")
-	}
+	echeck(t, e)
+
 	u = LdapGetUser(l, "utest")
-	if u != nil {
-		t.Error("-- LdapDeleteUser failed")
-	}
+	check(t, u == nil)
+
 	LdapClose(l)
 }
 
-func cleanLdap(t *testing.T) {
+func TestClean(t *testing.T) {
 	l, _ := LdapOpen("ldap://localhost:389", "dc=ldap,dc=example,dc=org", "admin123")
+	check(t, l)
 	if l != nil {
 		LdapDeleteGroup(l, "UnGroupe")
 		LdapDeleteUser(l, "utest")
