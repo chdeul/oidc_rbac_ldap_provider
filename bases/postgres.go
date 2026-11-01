@@ -3,53 +3,18 @@ package bases
 import (
 	"database/sql"
 	"fmt"
-	"log"
-	obj "main/objets"
+	"main/tools"
 	"time"
 
 	"github.com/lib/pq"
 	_ "github.com/lib/pq"
 )
 
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "antoine"
-	password = "chdeul"
-	dbname   = "test"
-)
+// TODO  CRUD object : table row : with config file for request,  unshalling
+// TODO  Flyway like (sql_migrate) Create roles, database, schema,  Drop
+// TODO  config Pool of connections
 
-func LeTest() {
-
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
-
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		return
-	}
-	defer db.Close()
-
-	rows, err := db.Query("SELECT uid, ident, password, name, email FROM users WHERE ident = $1", "antoine")
-	if err != nil {
-		return
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var user obj.User
-		rows.Scan(&user.Uid, &user.Identifiant, &user.MotDePasse, &user.NomComplet, &user.AdresseMail)
-		if user.AdresseMail == "" {
-			return
-		}
-	}
-	go addTrigger(db, psqlInfo, "users")
-	/*
-		    row := db.QueryRow(`insert into users(name, age) values('Scrooge McDuck', 93) returning id`)
-			var userid int
-			row.Scan(&userid)
-	*/
-}
-
+// Add trigger on table change, to be notified as replacement for webhook
 func addTrigger(db *sql.DB, psqlInfo string, tableName string) {
 
 	install := fmt.Sprintf(`
@@ -64,7 +29,7 @@ func addTrigger(db *sql.DB, psqlInfo string, tableName string) {
 			'data' , row_to_json(NEW)
 		);
 
-		PERFORM pg_notify('%s_channel', payload::text);
+		PERFORM pg_notify('%s_pgsqlchannel', payload::text);
 		RETURN NEW;
 	END;
 	$$ LANGUAGE plpgsql;
@@ -76,35 +41,30 @@ func addTrigger(db *sql.DB, psqlInfo string, tableName string) {
 	`, tableName, tableName, tableName, tableName, tableName)
 
 	_, err := db.Query(install)
-	if err != nil {
-		return
-	}
+	tools.CheckError(err, "Cannot set postgresql trigger : %v", err)
 
 	// Create a new listener
 	listener := pq.NewListener(psqlInfo, 10*time.Second, time.Minute,
 		func(ev pq.ListenerEventType, err error) {
-			if err != nil {
-				log.Println("Listener error:", err)
-			}
+			tools.CheckError(err, "Postgresql Listener error: %v", err)
 		})
 
 	// Subscribe to a channel
-	err = listener.Listen(tableName + "_channel")
-	if err != nil {
-		return
-	}
+	err = listener.Listen(tableName + "_pgsqlchannel")
+	tools.CheckError(err)
 
-	log.Println("Listening for notifications...")
+	tools.Info("Listening for Postgresql notifications...")
 	for {
 		select {
 		case n := <-listener.Notify:
 			if n != nil {
-				fmt.Printf("Received notification: channel=%s payload=%s\n", n.Channel, n.Extra)
+
+				// TODO   call a callback
+				tools.Debug("Received Postgresql notification: channel=%s payload=%s", n.Channel, n.Extra)
 			}
 		case <-time.After(90 * time.Second):
 			// Keep the connection alive
 			go listener.Ping()
 		}
 	}
-	// log.Println("End Listening.")
 }

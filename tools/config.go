@@ -108,9 +108,7 @@ func LoadConfig(dir string) {
 
 	// Lecture fichier
 	err := LoadAnyConfig(dir+"/config.yml", &Cfg)
-	if err != nil {
-		panic(err)
-	}
+	AssertError(err, "Load config fail %v", err)
 
 	// Normalisation des context path configuré  "/"" => ""   "/toto" => "/toto"
 	if Cfg.WebUi.ContextPath == "/" {

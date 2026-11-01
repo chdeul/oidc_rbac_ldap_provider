@@ -15,9 +15,7 @@ func LoadTrustedCertFiles(ctx context.Context) context.Context {
 
 	// Load https server certificate
 	caCert, err := os.ReadFile(Cfg.Openidc.Client.RootCA)
-	if err != nil {
-		Panic("Fichier certificat https non chargé : %v", err)
-	}
+	CheckError(err, "Fichier certificat https non chargé : %v", err)
 
 	// Create certificates store
 	caCertPool := x509.NewCertPool()
