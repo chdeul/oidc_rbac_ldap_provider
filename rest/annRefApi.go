@@ -21,7 +21,7 @@ func apiAnnRefRead(w http.ResponseWriter, r *http.Request) {
 
 	initAnnRef()
 
-	// Read only annuary
+	// Read only directory
 	if r.Method != "GET" {
 		w.WriteHeader(http.StatusNoContent)
 		return

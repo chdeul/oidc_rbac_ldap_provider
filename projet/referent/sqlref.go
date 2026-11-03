@@ -24,7 +24,7 @@ type SqlConfig struct {
 		Password string
 		Dbname   string
 	}
-	Annuary struct {
+	Directory struct {
 		Users string
 		Group string
 	}
@@ -70,7 +70,7 @@ func (rf *RefSql) SearchUser(id string) []obj.User {
 	if id == "" {
 		return nil
 	}
-	rows, err := rf.conn.Query(rf.cfg.Annuary.Users, id)
+	rows, err := rf.conn.Query(rf.cfg.Directory.Users, id)
 	if err != nil {
 		return nil
 	}
@@ -92,7 +92,7 @@ func (rf *RefSql) SearchGroup(id string) []obj.User {
 	if id == "" {
 		return nil
 	}
-	rows, err := rf.conn.Query(rf.cfg.Annuary.Group, id)
+	rows, err := rf.conn.Query(rf.cfg.Directory.Group, id)
 	if err != nil {
 		return nil
 	}

@@ -5,7 +5,7 @@ database:
   user:     "antoine"
   password: "chdeul"
   dbname:   "test"
-annuary:
+directory:
   users: |
     SELECT 
       id as Uid,

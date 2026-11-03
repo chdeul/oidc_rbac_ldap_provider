@@ -183,7 +183,7 @@ func CheckOrCreateUserFromOidcLogin(user *obj.User) error {
 	return nil
 }
 
-// ---------------- Renew use Destination Agréments openldap Annuary
+// ---------------- Renew use Destination Agréments openldap Directory
 
 func AnnReadUser(identifiant string) *obj.User {
 	c := annOpen("")

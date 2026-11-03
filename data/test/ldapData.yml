@@ -2,7 +2,7 @@ database:
   host:     "localhost"
   port:     "389"
   root:     "dc=ldap,dc=example,dc=org"
-annuary:
+directory:
   users:
     scope: Children     # or BaseObject SingleLevel  WholeSubtree 
     path: "ou=users"

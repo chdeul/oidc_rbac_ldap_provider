@@ -47,7 +47,7 @@ func main() {
 	// ---- Server OIDC  /oidc/*  ----
 	if tools.Cfg.Openidc.Server.Active {
 
-		// Users Annuary for OIDC  : on Agréments openldap
+		// Users Directory for OIDC  : on Agréments openldap
 		users := storage.NewUserStore("")
 		defer storage.CloseStore(users)
 

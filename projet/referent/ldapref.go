@@ -21,7 +21,7 @@ type LdapConfig struct {
 		Port string
 		Root string
 	}
-	Annuary struct {
+	Directory struct {
 		Users struct {
 			Scope  string
 			Path   string
@@ -82,16 +82,16 @@ func (rf *RefLdap) SearchUser(id string) []obj.User {
 	if id == "" {
 		return nil
 	}
-	usersDn := rf.cfg.Annuary.Users.Path + "," + rf.cfg.Database.Root
+	usersDn := rf.cfg.Directory.Users.Path + "," + rf.cfg.Database.Root
 
-	att := strings.Split(rf.cfg.Annuary.Users.Fields, "|")
+	att := strings.Split(rf.cfg.Directory.Users.Fields, "|")
 	if len(att) != 5 {
 		return nil
 	}
 	// Filter on objets of users,and this identifiant pattern
 	searchRequest := ldap.NewSearchRequest(usersDn,
-		scope(rf.cfg.Annuary.Users.Scope), ldap.NeverDerefAliases, 0, 0, false,
-		fmt.Sprintf(rf.cfg.Annuary.Users.Search, id),
+		scope(rf.cfg.Directory.Users.Scope), ldap.NeverDerefAliases, 0, 0, false,
+		fmt.Sprintf(rf.cfg.Directory.Users.Search, id),
 		att, nil)
 
 	// Search for the matching usernames
@@ -122,18 +122,18 @@ func (rf *RefLdap) SearchGroup(id string) []obj.User {
 	if id == "" {
 		return nil
 	}
-	att := strings.Split(rf.cfg.Annuary.Users.Fields, "|")
+	att := strings.Split(rf.cfg.Directory.Users.Fields, "|")
 	if len(att) != 4 {
 		return nil
 	}
 
-	groupDn := rf.cfg.Annuary.Group.Path + "," + rf.cfg.Database.Root
+	groupDn := rf.cfg.Directory.Group.Path + "," + rf.cfg.Database.Root
 
 	// Filter on objets of users,and this identifiant pattern
 	searchRequest := ldap.NewSearchRequest(groupDn,
-		scope(rf.cfg.Annuary.Group.Scope), ldap.NeverDerefAliases, 0, 0, false,
-		fmt.Sprintf(rf.cfg.Annuary.Group.Search, id),
-		[]string{rf.cfg.Annuary.Group.Member}, nil)
+		scope(rf.cfg.Directory.Group.Scope), ldap.NeverDerefAliases, 0, 0, false,
+		fmt.Sprintf(rf.cfg.Directory.Group.Search, id),
+		[]string{rf.cfg.Directory.Group.Member}, nil)
 
 	// Search for the matching Group
 	sr, err := rf.conn.Search(searchRequest)
@@ -145,10 +145,10 @@ func (rf *RefLdap) SearchGroup(id string) []obj.User {
 	ret := []obj.User{}
 	for _, entry := range sr.Entries {
 		// Members of a found group
-		members := entry.GetAttributeValues(rf.cfg.Annuary.Group.Member)
+		members := entry.GetAttributeValues(rf.cfg.Directory.Group.Member)
 		for _, member := range members {
 			// Dn of member (if not already)
-			mpath := fmt.Sprintf(rf.cfg.Annuary.Group.Mpath, member)
+			mpath := fmt.Sprintf(rf.cfg.Directory.Group.Mpath, member)
 			// Get user from dn member
 			user := getUser(rf.conn, mpath, att)
 			// If exist and not already in table

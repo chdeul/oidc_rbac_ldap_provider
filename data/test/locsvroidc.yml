@@ -23,7 +23,7 @@ openidc:
         secret: chdeul
         callback : "https://localhost:8080/oidc/callback"   
    
-# Anuary of oidc server
+# Directory of oidc server
 dest:
   ldap:
     baseurl: ldap://localhost:389
