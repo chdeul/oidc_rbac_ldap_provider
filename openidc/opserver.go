@@ -84,7 +84,7 @@ func formManagement(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Requete non prévue, iconnue
-	fmt.Println("Requête inconnue", r.URL.Path)
+	tools.Warn("Requête inconnue", r.URL.Path)
 	w.WriteHeader(http.StatusNoContent)
 }
 

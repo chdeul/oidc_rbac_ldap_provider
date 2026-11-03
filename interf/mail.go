@@ -104,7 +104,6 @@ func MySendMail(from string, dest string, data []byte) error {
 	}
 	// Quels mécanismes : PLAIN  ( LOGIN, CRAM, XOAUTH2 : non géré ! )
 	if ok, mechs := c.Extension("AUTH"); ok {
-		fmt.Println("AUTH annoncés:", mechs)
 		if !strings.Contains(mechs, "PLAIN") {
 			tools.Fatal("pas d'authentification PLAIN")
 		}

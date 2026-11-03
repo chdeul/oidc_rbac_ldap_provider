@@ -1,7 +1,6 @@
 package referent
 
 import (
-	"fmt"
 	"main/interf"
 	obj "main/objets"
 	"main/tools"
@@ -38,7 +37,7 @@ func (rf *RefRest) SearchUser(id string) (table []obj.User) {
 	// Catch exception de conversion
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Printf("RestInput mal configuré %v", r)
+			tools.Error("RestInput mal configuré %v", r)
 			table = nil
 		}
 	}()
@@ -58,7 +57,7 @@ func (rf *RefRest) SearchGroup(gr string) (table []obj.User) {
 	}
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Printf("RestInput mal configuré %v", r)
+			tools.Error("RestInput mal configuré %v", r)
 			table = nil
 		}
 	}()

@@ -3,7 +3,6 @@ package openidc
 import (
 	"context"
 	"crypto/tls"
-	"fmt"
 	storage "main/openidc/Storage"
 	"main/tools"
 	"net/http"
@@ -67,16 +66,16 @@ func TestOidcClient(t *testing.T) {
 		// Reponse : 200 from sso
 		tools.Tcheck(t, resp.StatusCode == http.StatusOK, "expected 200, got %d", resp.StatusCode)
 
-		fmt.Println("test web end.")
+		tools.Info("test web end.")
 
 		// Arret
 		srv.Shutdown(context.Background())
 	})
 
 	// Serveur web
-	fmt.Println("server web start...")
+	tools.Info("server web start...")
 	srv.ListenAndServe()
-	fmt.Println("server web end.")
+	tools.Info("server web end.")
 }
 
 // Require : openldap running
@@ -111,14 +110,14 @@ func TestOidcServer(t *testing.T) {
 		tools.Tcheck(t, resp.StatusCode == http.StatusNotFound, "expected 404, got %d", resp.StatusCode)
 		tools.Tcheck(t, resp.Request.URL.Path == "/oidc-ui/login.html", "login page not built")
 
-		fmt.Println("test web end.")
+		tools.Info("test web end.")
 
 		// Arret
 		srv.Shutdown(context.Background())
 	})
 
 	// Serveur web
-	fmt.Println("server web start...")
+	tools.Info("server web start...")
 	srv.ListenAndServeTLS(tools.Cfg.Server.CertFile, tools.Cfg.Server.KeyFile)
-	fmt.Println("server web end.")
+	tools.Info("server web end.")
 }

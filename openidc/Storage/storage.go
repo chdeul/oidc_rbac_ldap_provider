@@ -165,7 +165,7 @@ func (s *Storage) CheckUsernamePassword(username, password, id string) error {
 
 func (s *Storage) CheckUsernamePasswordSimple(username, password string) error {
 
-	fmt.Println("CheckUsernamePasswordSimple ", username)
+	// fmt.Println("CheckUsernamePasswordSimple ", username)
 
 	s.lock.Lock()
 	defer s.lock.Unlock()

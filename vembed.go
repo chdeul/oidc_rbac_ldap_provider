@@ -5,7 +5,6 @@ import (
 	"compress/gzip"
 	"embed"
 	_ "embed"
-	"fmt"
 	"main/tools"
 	"net/http"
 	"os"
@@ -50,8 +49,7 @@ func packEmbeds(fic string) {
 
 	// Fichier racine à lire
 	content, err := readFile(fic)
-	if err != nil {
-		fmt.Println("Fichier index.html non trouvé :", err)
+	if !tools.CheckError(err, "Fichier index.html non trouvé :", err) {
 		return
 	}
 
@@ -69,9 +67,8 @@ func packEmbeds(fic string) {
 		}
 		// Lit le fichier src indiqué
 		included, err := readFile(result[1])
-		if err != nil {
+		if tools.CheckError(err, "Fichier v-emded %s non trouvé : %v", result[1], err) {
 			// Fichier non trouvé
-			fmt.Println("Fichier v-emded", result[1], "non trouvé : ", err)
 			html = strings.ReplaceAll(html, result[0], "<v-emded src='"+result[1]+"' title='not found'>")
 			continue
 		}
