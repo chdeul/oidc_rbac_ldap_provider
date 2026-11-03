@@ -51,13 +51,13 @@ func clientCallback(w http.ResponseWriter, r *http.Request,
 	// state : jeton antcsrf , Url initiale demandée
 	path := tools.Cfg.WebUi.ContextPath + "/index.html" // default redirection home page
 	values := strings.SplitN(state, "~", 2)
-	if len(values) != 2 {
+	if !tools.Check(len(values) == 2) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	// Verifier anti csrf : multiple de 7
 	alea, err := strconv.Atoi(values[0])
-	if err != nil || (alea%7) != 0 {
+	if !tools.Check(err == nil && (alea%7) == 0) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -69,14 +69,14 @@ func clientCallback(w http.ResponseWriter, r *http.Request,
 	// Search or Create user into agrem ldap from OIDC Infos
 	user := obj.User{Uid: info.Subject, Identifiant: info.PreferredUsername, NomComplet: info.Name, AdresseMail: info.Email, Roles: info.Claims["Roles"].(string)}
 	err = interf.CheckOrCreateUserFromOidcLogin(&user)
-	if err != nil {
+	if tools.CheckError(err, "Check Or Create User From Oidc Login") {
 		http.Redirect(w, r, path, http.StatusForbidden)
 		return
 	}
 
 	// Génère un (nouveau) jeton d'uthentification JWT
 	_, err = tools.JwtCreateAndTransmit(w, user.Identifiant, idtoken, obj.GetProfil(user.Identifiant, user.Roles))
-	if err != nil {
+	if tools.CheckError(err, "Jwt Create And Transmit") {
 		http.Redirect(w, r, path, http.StatusInternalServerError)
 		return
 	}
@@ -117,20 +117,20 @@ func OpClient() error {
 	client, err = rp.NewRelyingPartyOIDC(ctx, tools.Cfg.Openidc.Client.Issuer+"/",
 		tools.Cfg.Openidc.Client.Ident, tools.Cfg.Openidc.Client.Secret,
 		tools.Cfg.Openidc.Client.Callback, tools.Cfg.Openidc.Client.Scope, options...)
-	if err != nil {
-		panic(err)
-	}
+	tools.AssertError(err, "Registering as oidc client")
 
 	// Register /client/login  (declenche le login sso)
 	http.Handle(tools.Cfg.Openidc.Client.LoginPath, http.HandlerFunc(clientLogin))
 
 	// Register the frontchannel_logout_uri   /client/logout  (sur logout sso)
 	if tools.Cfg.Openidc.Client.FrontLogout != "" {
-		u, _ := url.Parse(tools.Cfg.Openidc.Client.FrontLogout)
+		u, erp := url.Parse(tools.Cfg.Openidc.Client.FrontLogout)
+		tools.AssertError(erp, "Url Openidc.Client.FrontLogout")
 		http.Handle(u.Path+"/", http.HandlerFunc(clientLogout))
 	}
 	// Register Callback endpoint   /client/callback  (sur bon login sso)
-	u, _ := url.Parse(tools.Cfg.Openidc.Client.Callback)
+	u, erp := url.Parse(tools.Cfg.Openidc.Client.Callback)
+	tools.AssertError(erp, "Url Openidc.Client.Callback")
 	http.HandleFunc(u.Path+"/", rp.CodeExchangeHandler(rp.UserinfoCallback(clientCallback), client))
 	return nil
 }

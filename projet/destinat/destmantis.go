@@ -16,16 +16,10 @@ import (
  * Mantis bugs tracker : projects, users, rbac
  */
 
-type MantisConf struct {
-	BaseUrl  string
-	HeadAuth string
-	CertFile string
-	Insecure bool
-}
-
 type DestMantis struct {
-	cfg *MantisConf
+	cfg *tools.DestCfg
 	mbt *resty.Client
+	api string
 }
 
 func (de *DestMantis) Name() string {
@@ -35,29 +29,30 @@ func (de *DestMantis) Name() string {
 func NewDestMantis() (*DestMantis, error) {
 
 	// Charge la configuration
-	var cfg MantisConf
-	err := tools.LoadAnyConfig("data/mantis.yml", &cfg)
-	if err != nil {
-		panic(err)
-	}
-	// cree le client d'API Rest Mantisbt
-	client := resty.New().SetDebug(false)
-	// client.SetAuthToken(cfg.HeadAuth)
-	client.SetHeader("Authorization", cfg.HeadAuth)
+	cfg := tools.Cfg.Dest["mantis"]
+	if tools.Check(cfg) {
+		// cree le client d'API Rest Mantisbt
+		client := resty.New().SetDebug(false)
+		// client.SetAuthToken(cfg.HeadAuth)
+		client.SetHeader("Authorization", cfg.TokenPasswd)
 
-	// Trust mantis cert
-	if cfg.CertFile != "" {
-		certPool := x509.NewCertPool()
-		pem, _ := os.ReadFile(cfg.CertFile)
-		certPool.AppendCertsFromPEM(pem)
-		client.SetTLSClientConfig(&tls.Config{
-			RootCAs:            certPool,
-			InsecureSkipVerify: cfg.Insecure,
-		})
+		// Trust mantis cert
+		if cfg.CertFile != "" {
+			certPool := x509.NewCertPool()
+			pem, err := os.ReadFile(cfg.CertFile)
+			tools.CheckError(err)
+			certPool.AppendCertsFromPEM(pem)
+			client.SetTLSClientConfig(&tls.Config{
+				RootCAs:            certPool,
+				InsecureSkipVerify: cfg.Insecure,
+			})
+		}
+		// Memorize configuration
+		dest := DestMantis{cfg: &cfg, mbt: client}
+		dest.api = dest.cfg.BaseUrl + dest.cfg.IdentAccess
+		return &dest, nil
 	}
-	// Memorize configuration
-	dest := DestMantis{cfg: &cfg, mbt: client}
-	return &dest, err
+	return nil, nil
 }
 
 func (de *DestMantis) Close() {
@@ -77,7 +72,7 @@ func (de *DestMantis) SearchProjects(projet string) []*obj.Project {
 
 	// Chercher le projet à partir de son nom flou
 
-	// Table de la réponse gitlab
+	// Table de la réponse mantis
 	var result struct {
 		Projects []struct {
 			Id          int    `json:"id"`
@@ -87,10 +82,10 @@ func (de *DestMantis) SearchProjects(projet string) []*obj.Project {
 		} `json:"projects"`
 	}
 
-	// Chercher les groups d'abord
+	// Chercher les projets
 	resp, err := de.mbt.R().
 		SetResult(&result).
-		Get(de.cfg.BaseUrl + "/projects")
+		Get(de.api + "/projects")
 
 	if err != nil {
 		tools.Error("Recherche projet mantis %v", err)
@@ -132,7 +127,7 @@ func (de *DestMantis) SearchUsers(ident string) []*obj.User {
 	resp, err := de.mbt.R().
 		SetPathParam("name", ident).
 		SetResult(&result).
-		Get(de.cfg.BaseUrl + "/users/username/{name}")
+		Get(de.api + "/users/username/{name}")
 
 	if err != nil {
 		tools.Error("Recherche utilisateur mantis %v", err)
@@ -145,7 +140,7 @@ func (de *DestMantis) SearchUsers(ident string) []*obj.User {
 			tab = append(tab, obj.NewUser(strconv.Itoa(p.Id), p.Name, p.RealName, p.Email, p.Level.Name))
 		}
 	} else {
-		tools.Error("Recherche utilisateur mantis %s", resp.String())
+		tools.Debug("Recherche utilisateur mantis %d", resp.StatusCode())
 		return nil
 	}
 	return tab
@@ -169,7 +164,7 @@ func (de *DestMantis) CreateUser(user *obj.User) error {
 			"password":     "",
 		}).
 		SetResult(&result).
-		Post(de.cfg.BaseUrl + "/users")
+		Post(de.api + "/users")
 
 	if err != nil {
 		tools.Error("Création utilisateur mantis %v", err)
@@ -196,7 +191,7 @@ func (de *DestMantis) UpdateUser(user *obj.User) error {
 				"access_level": map[string]string{"name": "viewer"},
 			},
 		}).
-		Patch(de.cfg.BaseUrl + "/users/{uid}")
+		Patch(de.api + "/users/{uid}")
 
 	if err != nil {
 		tools.Error("Mise à jour utilisateur mantis %v", err)
@@ -213,7 +208,7 @@ func (de *DestMantis) DeleteUser(user *obj.User) error {
 
 	resp, err := de.mbt.R().
 		SetPathParam("uid", user.Uid).
-		Delete(de.cfg.BaseUrl + "/users/{uid}")
+		Delete(de.api + "/users/{uid}")
 
 	if err != nil {
 		tools.Error("Suppression utilisateur mantis %v", err)
@@ -240,7 +235,7 @@ func (de *DestMantis) GetRole(prj *obj.Project, user *obj.User) string {
 	resp, err := de.mbt.R().
 		SetPathParam("pid", prj.Pid).
 		SetResult(&result).
-		Get(de.cfg.BaseUrl + "/projects/{pid}/users")
+		Get(de.api + "/projects/{pid}/users")
 
 	if err != nil {
 		tools.Error("Role utilisateur mantis %v", err)
@@ -268,7 +263,7 @@ func (de *DestMantis) CreateRole(prj *obj.Project, user *obj.User, role string) 
 			"user":         map[string]string{"name": user.Identifiant},
 			"access_level": map[string]string{"name": role},
 		}).
-		Put(de.cfg.BaseUrl + "/projects/{pid}/users")
+		Put(de.api + "/projects/{pid}/users")
 
 	if err != nil {
 		tools.Error("Création/Mise à jour Role utilisateur mantis %v", err)
@@ -290,7 +285,7 @@ func (de *DestMantis) DeleteRole(prj *obj.Project, user *obj.User) error {
 			"pid": prj.Pid,
 			"uid": user.Uid,
 		}).
-		Delete(de.cfg.BaseUrl + "/projects/{pid}/users/{uid}")
+		Delete(de.api + "/projects/{pid}/users/{uid}")
 
 	if err != nil {
 		tools.Error("Suppression Role utilisateur mantis %v", err)

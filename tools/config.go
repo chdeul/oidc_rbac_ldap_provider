@@ -9,6 +9,14 @@ import (
 	"go.yaml.in/yaml/v4"
 )
 
+type DestCfg struct {
+	BaseUrl     string
+	IdentAccess string
+	TokenPasswd string
+	Insecure    bool
+	CertFile    string
+}
+
 // Structure de données de config
 type Config struct {
 	Logging string
@@ -38,13 +46,7 @@ type Config struct {
 		Path    string
 		Filters map[string]string
 	}
-	Dest struct {
-		Ldap struct {
-			Url    string
-			Root   string
-			Passwd string
-		}
-	}
+	Dest  map[string]DestCfg
 	WebUi struct {
 		Active      bool
 		ContextPath string

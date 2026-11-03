@@ -19,11 +19,18 @@ func TestLdap(t *testing.T) {
 
 	// Creer
 	LectureProjet("../data/test/prjldap.csv")
-
 }
+
 func TestMantis(t *testing.T) {
+
+	// Nettoyer Mantis, créer le projet Mon_Projet
+
 	LectureProjet("../data/test/prjmantis.csv")
 }
+
 func TestGitlab(t *testing.T) {
+
+	// Nettoyer Gitlab, créer le projet Mon_Projet
+
 	LectureProjet("../data/test/prjgitlab.csv")
 }

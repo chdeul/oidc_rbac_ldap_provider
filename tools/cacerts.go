@@ -13,6 +13,10 @@ import (
 
 func LoadTrustedCertFiles(ctx context.Context) context.Context {
 
+	// Pas de root CA certificates
+	if Cfg.Openidc.Client.RootCA == "" {
+		return ctx
+	}
 	// Load https server certificate
 	caCert, err := os.ReadFile(Cfg.Openidc.Client.RootCA)
 	CheckError(err, "Fichier certificat https non chargé : %v", err)

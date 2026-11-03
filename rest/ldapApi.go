@@ -16,16 +16,18 @@ type groupData struct {
 }
 
 func open(write bool) {
-	if !write && conn == nil {
-		url := tools.Cfg.Dest.Ldap.Url
-		bind := tools.Cfg.Dest.Ldap.Root
-		conn, _ = bases.LdapOpen(url, bind, "")
-	}
-	if write && wconn == nil {
-		url := tools.Cfg.Dest.Ldap.Url
-		bind := tools.Cfg.Dest.Ldap.Root
-		pass := tools.Cfg.Dest.Ldap.Passwd
-		wconn, _ = bases.LdapOpen(url, bind, pass)
+	if tools.Check(tools.Cfg.Dest["ldap"]) {
+		if !write && conn == nil {
+			url := tools.Cfg.Dest["ldap"].BaseUrl
+			bind := tools.Cfg.Dest["ldap"].IdentAccess
+			conn, _ = bases.LdapOpen(url, bind, "")
+		}
+		if write && wconn == nil {
+			url := tools.Cfg.Dest["ldap"].BaseUrl
+			bind := tools.Cfg.Dest["ldap"].IdentAccess
+			pass := tools.Cfg.Dest["ldap"].TokenPasswd
+			wconn, _ = bases.LdapOpen(url, bind, pass)
+		}
 	}
 }
 
@@ -112,8 +114,8 @@ func apiLdapUpdate(w http.ResponseWriter, r *http.Request) {
 
 	if isCheck {
 		// First check password
-		url := tools.Cfg.Dest.Ldap.Url
-		bind := tools.Cfg.Dest.Ldap.Root
+		url := tools.Cfg.Dest["ldap"].BaseUrl
+		bind := tools.Cfg.Dest["ldap"].IdentAccess
 		cheched := bases.LdapCheckPassword(url, bind, user.Identifiant, user.MotDePasse)
 		if !cheched {
 			w.WriteHeader(http.StatusNotAcceptable)

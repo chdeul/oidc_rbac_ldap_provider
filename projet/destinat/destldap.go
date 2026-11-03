@@ -21,13 +21,17 @@ func (de *DestLdap) Name() string {
 
 func NewDestLdap() (*DestLdap, error) {
 
-	// Créer l'objet Destination
-	dest := DestLdap{}
+	ldapCfg := tools.Cfg.Dest["ldap"]
+	if tools.Check(ldapCfg) {
 
-	// Ouvrir la connexion en lecture/ecriture
-	var err error
-	dest.ldap, err = bases.LdapOpen(tools.Cfg.Dest.Ldap.Url, tools.Cfg.Dest.Ldap.Root, tools.Cfg.Dest.Ldap.Passwd)
-	return &dest, err
+		// Ouvrir la connexion en lecture/ecriture
+		conn, err := bases.LdapOpen(ldapCfg.BaseUrl, ldapCfg.IdentAccess, ldapCfg.TokenPasswd)
+
+		// Créer l'objet Destination
+		dest := DestLdap{ldap: conn}
+		return &dest, err
+	}
+	return nil, nil
 }
 
 func (de *DestLdap) Close() {
@@ -97,7 +101,16 @@ func (de *DestLdap) DeleteRole(prj *obj.Project, user *obj.User) error {
 
 // ldap projects methodes
 func (de *DestLdap) SearchProjects(projet string) []*obj.Project {
-	return bases.LdapSearchGroups(de.ldap, projet)
+	// projet = group dans le ldap
+	prj := bases.LdapSearchGroups(de.ldap, projet)
+	if len(prj) == 0 {
+		// Pour le ldap, si le projet n'existe pas, on le créé automatiquement
+		err := bases.LdapAddGroup(de.ldap, projet, "Project group")
+		if err == nil {
+			prj = append(prj, obj.NewProject("", projet, projet, "Project group"))
+		}
+	}
+	return prj
 }
 
 // Ldap users methodes

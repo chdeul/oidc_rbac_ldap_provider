@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	obj "main/objets"
+	"main/tools"
 	"testing"
 
 	_ "github.com/lib/pq"
@@ -27,20 +28,20 @@ func TestPostgres(t *testing.T) {
 		host, port, user, password, dbname)
 
 	db, err := sql.Open("postgres", psqlInfo)
-	echeck(t, err)
+	tools.TEcheck(t, err, "Open")
 	defer db.Close()
 
 	db.SetMaxOpenConns(10)
 
 	rows, err := db.Query("SELECT uid, ident, password, name, email FROM users WHERE ident = $1", "antoine")
-	echeck(t, err)
+	tools.TEcheck(t, err, "Query")
 	defer rows.Close()
-	check(t, rows)
+	tools.Tcheck(t, rows, "Query result")
 
 	for rows.Next() {
 		var user obj.User
 		rows.Scan(&user.Uid, &user.Identifiant, &user.MotDePasse, &user.NomComplet, &user.AdresseMail)
-		check(t, user.AdresseMail)
+		tools.Tcheck(t, user.AdresseMail, "Query data")
 	}
 }
 
@@ -50,7 +51,7 @@ func TestTrigger(t *testing.T) {
 		host, port, user, password, dbname)
 
 	db, err := sql.Open("postgres", psqlInfo)
-	echeck(t, err)
+	tools.TEcheck(t, err, "Open")
 	defer db.Close()
 
 	go addTrigger(db, psqlInfo, "users")

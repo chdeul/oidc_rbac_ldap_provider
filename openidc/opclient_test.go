@@ -2,6 +2,7 @@ package openidc
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	storage "main/openidc/Storage"
 	"main/tools"
@@ -11,50 +12,47 @@ import (
 	"time"
 )
 
+/*
+	Configuration to OIDC Test Provider
+		oidc test server   "https://oidctest.wsweet.org/"   id "private",  secret "tardis"
+		scopes   "openid", "profile", "email", "roles"
+		users:pwd    dwho:dwho  rtyler:rtyler   or  msmith:msmith
+*/
+
 func TestOidcClient(t *testing.T) {
 
-	/*
-		Configuration to OIDC Test Provider
-			oidc test server   "https://oidctest.wsweet.org/"   id "private",  secret "tardis"
-			scopes   "openid", "profile", "email", "roles"
-			users:pwd    dwho:dwho  rtyler:rtyler   or  msmith:msmith
-	*/
 	// OPClient needs config
-	tools.LoadConfig("..")
+	err := tools.LoadAnyConfig("../data/test/wsweetoidc.yml", &tools.Cfg)
+	tools.TEcheck(t, err, "Load Any Config")
 
 	// Serveur web à lancer
 	srv := &http.Server{
-		Addr:    ":8080",
+		Addr:    tools.Cfg.Server.ListenIp + ":" + tools.Cfg.Server.Port,
 		Handler: http.DefaultServeMux,
 	}
 
-	// Func to test  ( see config.yml )
+	// Func to test ( see config.yml )
 	OpClient()
 
 	// Déclenche le test dans 1 s
 	time.AfterFunc(1*time.Second, func() {
 
 		// Get Login path + redirect to sso  /authorize
-		resp, err := http.Get("http://localhost:8080/login")
-		if err != nil {
-			t.Fatalf("GET failed: %v", err)
-		}
+		resp, err := http.Get("http://localhost:8080/client/login")
+		tools.TEcheck(t, err, "GET failed: %v", err)
 		defer resp.Body.Close()
 
 		// Reponse : 200 from sso  with cookie lemonldappdata
-		if resp.StatusCode != http.StatusOK {
-			t.Errorf("expected 200, got %d", resp.StatusCode)
-		}
+		tools.Tcheck(t, resp.StatusCode == http.StatusOK, "expected 200, got %d", resp.StatusCode)
+
 		// with cookie lemonldappdata
 		c := resp.Header.Values("Set-Cookie")[0]
-		if !strings.HasPrefix(c, "lemonldappdata=") {
-			t.Errorf("expected Set-Cookie lemonldappdata=")
-		}
+		tools.Tcheck(t, strings.HasPrefix(c, "lemonldappdata="), "expected Set-Cookie lemonldappdata=")
+
 		// extract token from cookie issuerRequestoauth2%22%3A%22 ( 1773411293_61837 )  %22
 		i := strings.Index(c, "issuerRequestoauth2%22%3A%22")
-		if i+28+16 >= len(c) {
-			t.Errorf("expected issuerRequestoauth2 token")
-		}
+		tools.Tcheck(t, i+28+16 < len(c), "expected issuerRequestoauth2 token")
+
 		// Get token : 1773411293_61837
 		c = c[i+28 : i+28+16]
 
@@ -67,17 +65,8 @@ func TestOidcClient(t *testing.T) {
 			strings.NewReader(data),
 		)
 		// Reponse : 200 from sso
-		if resp.StatusCode != http.StatusOK {
-			t.Errorf("expected 200, got %d", resp.StatusCode)
-		}
-		// with callback called
-		//if received == nil {
-		//	t.Errorf("expected callback called")
-		//}
-		// Receive {"email":"dwho@badwolf.org","name":"Doctor Who","preferred_username":"dwho","roles":["users","timelords"],"sid":"***","sub":"dwho"}
-		//if received.Name != "Doctor Who" {
-		//	t.Errorf("expected name %s, received %s", "Doctor Who", received.Name)
-		//}
+		tools.Tcheck(t, resp.StatusCode == http.StatusOK, "expected 200, got %d", resp.StatusCode)
+
 		fmt.Println("test web end.")
 
 		// Arret
@@ -90,39 +79,37 @@ func TestOidcClient(t *testing.T) {
 	fmt.Println("server web end.")
 }
 
+// Require : openldap running
+
 func TestOidcServer(t *testing.T) {
 
-	// OPServer needs config
-	tools.LoadConfig(".")
+	// OPClient needs config
+	err := tools.LoadAnyConfig("../data/test/locsvroidc.yml", &tools.Cfg)
+	tools.TEcheck(t, err, "Load Any Config")
 
-	ustore := storage.NewUserStore("../data/users.json")
-	if ustore == nil {
-		t.Fatalf("Setup OIDC StoreFromFile failed")
-	}
-	_, err := SetupServer(storage.NewStorage(ustore))
-	if err != nil {
-		t.Fatalf("Setup OIDC Server failed: %v", err)
-	}
+	ustore := storage.NewUserStore("https://localhost:8080/oidc/")
+	tools.Tcheck(t, ustore != nil, "Setup OIDC StoreFromFile failed")
+
+	_, err = SetupServer(storage.NewStorage(ustore))
+	tools.TEcheck(t, err, "Setup OIDC Server failed: %v", err)
+
 	// Serveur web à lancer
 	srv := &http.Server{
-		Addr:    ":8080",
-		Handler: nil,
+		TLSConfig: &tls.Config{MinVersion: tls.VersionTLS12},
+		Addr:      tools.Cfg.Server.ListenIp + ":" + tools.Cfg.Server.Port,
+		Handler:   http.DefaultServeMux,
 	}
 	// Déclenche le test dans 1 s
 	time.AfterFunc(1*time.Second, func() {
 
 		// Get Login path + redirect to sso  /authorize
-		// /authorize?client_id=sid1&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fopenidc%2Fcallback&response_mode=query&response_type=code&scope=openid+profile+email+roles&state=%2Fstate
-		resp, err := http.Get("http://localhost:8080/authorize?client_id=sid1&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fopenidc%2Fcallback&response_mode=query&response_type=code&scope=openid+profile+email+roles&state=%2Fstate")
-		if err != nil {
-			t.Fatalf("GET failed: %v", err)
-		}
+		resp, err := http.Get("https://localhost:8080/oidc/authorize?client_id=test&redirect_uri=https%3A%2F%2Flocalhost%3A8080%2Foidc%2Fcallback&response_mode=query&response_type=code&scope=openid+profile+email+roles&state=%2Fstate")
+		tools.TEcheck(t, err, "GET failed: %v", err)
 		defer resp.Body.Close()
 
-		// Reponse : 200 from sso
-		if resp.StatusCode != http.StatusOK {
-			t.Errorf("expected 200, got %d", resp.StatusCode)
-		}
+		// Reponse : 404 from sso  (car pas de page de login enregistré pour ce test )
+		tools.Tcheck(t, resp.StatusCode == http.StatusNotFound, "expected 404, got %d", resp.StatusCode)
+		tools.Tcheck(t, resp.Request.URL.Path == "/oidc-ui/login.html", "login page not built")
 
 		fmt.Println("test web end.")
 
@@ -132,6 +119,6 @@ func TestOidcServer(t *testing.T) {
 
 	// Serveur web
 	fmt.Println("server web start...")
-	srv.ListenAndServe()
+	srv.ListenAndServeTLS(tools.Cfg.Server.CertFile, tools.Cfg.Server.KeyFile)
 	fmt.Println("server web end.")
 }

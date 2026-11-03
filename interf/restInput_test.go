@@ -1,18 +1,17 @@
 package interf
 
 import (
-	"os"
+	"main/tools"
 	"testing"
 )
 
-func testRestInput(t *testing.T) {
+// Prerequis lancer une API REST
+
+func TestRestInput(t *testing.T) {
 
 	cfg, err := LoadInputConfig("./restInput.yml")
-	if err != nil {
-		os.Exit(-1)
-	}
+	tools.TEcheck(t, err, "LoadInputConfig")
+
 	ret := RestInputFct(cfg, "GET", "users/{id}", nil)
-	if ret == nil {
-		t.Error("RestInputFct failed")
-	}
+	tools.Tcheck(t, ret, "RestInputFct failed")
 }

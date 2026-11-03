@@ -2,6 +2,7 @@ package tables
 
 import (
 	obj "main/objets"
+	"main/tools"
 	"os"
 	"testing"
 )
@@ -21,24 +22,17 @@ func testCsvUsers(t *testing.T) {
 	tab[0] = *NewUser("1", "aa", "%|\"'", "bb_b:", "ccc xxx", "")
 	tab[1] = *NewUser("2", "aa%|\"'", "", "bb,b", "", "chef")
 	err := WriteUsers(tab, fn)
-	if err != nil {
-		t.Error("WriteUsers failed")
-	}
+	tools.TEcheck(t, err, "WriteUsers")
+
 	res := ReadUsers(fn)
-	if len(res) != 2 {
-		t.Fatal("ReadUsers failed")
-	}
-	if res[0].AdresseMail != "ccc xxx" || res[1].AdresseMail != "" {
-		t.Error("ReadUser failed")
-	}
+	tools.Tcheck(t, len(res) == 2, "ReadUsers")
+	tools.Tcheck(t, res[0].AdresseMail == "ccc xxx" && res[1].AdresseMail == "", "ReadUsers")
+
 	err = WriteUser(NewUser("3", "zz", "_", "xxxxxxx", "123.56", "chef"), fn)
-	if err != nil {
-		t.Error("WriteUser failed")
-	}
+	tools.TEcheck(t, err, "WriteUser")
+
 	ru := ReadUser("zz", fn)
-	if ru.Identifiant != "zz" || ru.MotDePasse != "_" || ru.AdresseMail != "123.56" {
-		t.Error("ReadUser failed")
-	}
+	tools.Tcheck(t, ru.Identifiant == "zz" && ru.MotDePasse == "_" && ru.AdresseMail == "123.56", "ReadUser")
 }
 
 func cleanCsvUsers(t *testing.T) {

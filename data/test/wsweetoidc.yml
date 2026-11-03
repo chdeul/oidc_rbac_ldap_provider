@@ -1,0 +1,20 @@
+### Fichier de configuration -Test ###
+
+# client openid connect
+openidc:
+  client:
+    active:     true
+    issuer:     "https://oidctest.wsweet.org" # /.well-known/openid-configuration
+    ident:      "private" 
+    secret:     "tardis"
+    callback:   "http://localhost:8080/openidc/callback"
+    postlogout:  "http://localhost:8080/client/logout"
+    frontlogout: "http://localhost:8080/client/logout"
+    scope:      [ "openid", "profile", "email", "roles" ]
+    authmethod: "query"  # or fragment or form_post 
+    uidfield:   "sub"    # or uid or preferred_username
+    loginpath:   "/client/login"
+    agecookie:   "session"
+    createuser:  false
+    rootca:      ""
+

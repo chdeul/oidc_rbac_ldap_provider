@@ -2,6 +2,7 @@ package interf
 
 import (
 	"fmt"
+	"main/tools"
 	"os"
 	"testing"
 )
@@ -9,6 +10,8 @@ import (
 func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
+
+// Prerequis : lancer un serveur smtp mailpit
 
 func TestMail(t *testing.T) {
 
@@ -31,7 +34,5 @@ func TestMail(t *testing.T) {
 	msg += fmt.Sprint(body)
 
 	err := MySendMail(from, "test@test.com", []byte(msg))
-	if err != nil {
-		t.Error("Mail non envoyé : erreur")
-	}
+	tools.TEcheck(t, err, "Mail non envoyé : erreur")
 }

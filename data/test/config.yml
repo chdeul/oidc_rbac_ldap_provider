@@ -13,8 +13,16 @@ ref:
 # Destinations - Applications controlées
 dest:
   ldap:
-    url: ldap://localhost:389
-    root: dc=ldap,dc=example,dc=org
-    passwd: admin123
-
-
+    baseurl: ldap://localhost:389
+    identaccess: dc=ldap,dc=example,dc=org
+    tokenpasswd: admin123
+  mantis:
+    baseurl: "http://localhost:8080"
+    identaccess: /api/rest
+    tokenpasswd: 2YlTDV80nt8ZQhleYfi_CLfoyLZ1gR1T
+    insecure: true
+  gitlab:
+    baseurl: "https://gitlab.loc:8888"
+    identaccess: /api/v4
+    tokenpasswd: "glpat-Q5etHm9n57pu2acO1Lofm286MQp1OjEH.01.0w0k107yg"
+    insecure: true

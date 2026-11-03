@@ -198,34 +198,37 @@ func AnnReadUserFromEmail(adresseMail string) *obj.User {
 }
 
 func AnnWritePassword(user *obj.User) error {
-	c := annOpen(tools.Cfg.Dest.Ldap.Passwd)
+	c := annOpen(tools.Cfg.Dest["ldap"].TokenPasswd)
 	defer annClose(c)
 	return bases.LdapSetPassword(c, user.Identifiant, user.MotDePasse)
 }
 
 func AnnAddUser(user *obj.User) error {
-	c := annOpen(tools.Cfg.Dest.Ldap.Passwd)
+	c := annOpen(tools.Cfg.Dest["ldap"].TokenPasswd)
 	defer annClose(c)
 	return bases.LdapAddUser(c, user)
 }
 
 func AnnUpdateUser(user *obj.User) error {
-	c := annOpen(tools.Cfg.Dest.Ldap.Passwd)
+	c := annOpen(tools.Cfg.Dest["ldap"].TokenPasswd)
 	defer annClose(c)
 	return bases.LdapUpdateUser(c, user)
 }
 
 func AnnCheckPassword(identifiant, password string) bool {
-	url := tools.Cfg.Dest.Ldap.Url
-	bind := tools.Cfg.Dest.Ldap.Root
+	url := tools.Cfg.Dest["ldap"].BaseUrl
+	bind := tools.Cfg.Dest["ldap"].IdentAccess
 	return bases.LdapCheckPassword(url, bind, identifiant, password)
 }
 
 func annOpen(pass string) any {
-	url := tools.Cfg.Dest.Ldap.Url
-	bind := tools.Cfg.Dest.Ldap.Root
-	conn, _ := bases.LdapOpen(url, bind, pass)
-	return conn
+	if tools.Check(tools.Cfg.Dest["ldap"]) {
+		url := tools.Cfg.Dest["ldap"].BaseUrl
+		bind := tools.Cfg.Dest["ldap"].IdentAccess
+		conn, _ := bases.LdapOpen(url, bind, pass)
+		return conn
+	}
+	return nil
 }
 
 func annClose(conn any) {

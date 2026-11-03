@@ -8,12 +8,12 @@ batch:
  # Http Service 
 server:
   listenip: 0.0.0.0
-  port: 8080   
+  port: 8088   
   protocol: http
   #certfile: server-chain.crt
   #keyfile: server.key
-  backurl: http://localhost:8080 
-  usedurl: http://localhost:8080
+  backurl: http://localhost:8088
+  usedurl: http://localhost:8088
   tokensecret: MonPrecieux 
   smtp:
     ident: mailpit
@@ -33,9 +33,13 @@ ref:
 # Destinations - Applications controlées
 dest:
   ldap:
-    url: ldap://localhost:389
-    root: dc=ldap,dc=example,dc=org
-    passwd: admin123
+    baseurl: ldap://localhost:389
+    identaccess: dc=ldap,dc=example,dc=org
+    tokenpasswd: admin123
+  #mantis:
+  #  baseurl: "http://localhost:8086/mantis"
+  #  identaccess: /api/rest
+  #  tokenpasswd: 2YlTDV80nt8ZQhleYfi_CLfoyLZ1gR1T
 
 # Interface d'administration
 webui:
@@ -53,7 +57,7 @@ openidc:
   # Connect to SSO (myself or other)...
   client:
     active: false
-    issuer: http://localhost:8080/oidc # /.well-known/openid-configuration    
+    issuer: http://localhost:8088/oidc # /.well-known/openid-configuration    
     ident: agrements
     secret: amboise
     callback: https://localhost/client/callback

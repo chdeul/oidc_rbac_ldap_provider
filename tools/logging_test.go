@@ -81,6 +81,13 @@ func TestAssert(t *testing.T) {
 	}
 }
 
+func TestAssertError(t *testing.T) {
+	defer Recover()
+	if AssertError(fmt.Errorf("an error")) {
+		t.Fail()
+	}
+}
+
 func TestPanic(t *testing.T) {
 	defer func() {
 		recover()
@@ -95,4 +102,17 @@ func TestFatal(t *testing.T) {
 	}()
 	Fatal("Fatal!!!!!")
 	t.Fail()
+}
+
+func TestTcheck(t *testing.T) {
+	defer recover()
+	Tcheck(t, t)
+	TEcheck(t, nil)
+}
+
+func TestTEcheck(t *testing.T) {
+	t.Skip("for debug only")
+	defer recover()
+	Tcheck(t, nil)                     // test error
+	TEcheck(t, fmt.Errorf("an error")) // test error
 }

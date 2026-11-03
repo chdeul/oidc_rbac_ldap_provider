@@ -39,7 +39,9 @@ type userStore struct {
 
 func NewUserStore(issuer string) UserStore {
 
-	conn, err := bases.LdapOpen(tools.Cfg.Dest.Ldap.Url, tools.Cfg.Dest.Ldap.Root, "")
+	ldapCfg := tools.Cfg.Dest["ldap"]
+	tools.Assert(ldapCfg)
+	conn, err := bases.LdapOpen(ldapCfg.BaseUrl, ldapCfg.IdentAccess, "")
 	if err != nil {
 		panic("Impossible de se connecter au LDAP d'agréments")
 	}
@@ -63,7 +65,8 @@ func (u userStore) GetUserByID(ident string) *User {
 
 func (u userStore) CheckPassword(ident string, password string) bool {
 
-	return bases.LdapCheckPassword(tools.Cfg.Dest.Ldap.Url, tools.Cfg.Dest.Ldap.Root, ident, password)
+	ldapCfg := tools.Cfg.Dest["ldap"]
+	return bases.LdapCheckPassword(ldapCfg.BaseUrl, ldapCfg.IdentAccess, ident, password)
 }
 
 func CloseStore(us UserStore) {

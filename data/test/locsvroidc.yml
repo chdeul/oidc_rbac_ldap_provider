@@ -1,0 +1,31 @@
+# Http Service 
+server:
+  listenip: 0.0.0.0
+  port: 8080  
+  protocol: https
+  certfile: ../custom/server-chain.crt
+  keyfile: ../custom/server.key
+  backurl: https://localhost:8080
+  usedurl: https://localhost:8080
+  tokensecret: MonPrecieux 
+
+openidc:  
+  # Serve as SSO oidc  on UsedUrl
+  server:
+    active: true
+    contextpath: /oidc        # sso api context
+    ssouipath: /oidc-ui       # sso ui context
+    formlogin : /login.html   # sso login page
+    # logoutpath: /logout.html  # default si pas redirection spécifiée
+    # Liste des clients autorisés à l'utiliser
+    registered:
+      - ident: test
+        secret: chdeul
+        callback : "https://localhost:8080/oidc/callback"   
+   
+# Anuary of oidc server
+dest:
+  ldap:
+    baseurl: ldap://localhost:389
+    identaccess: dc=ldap,dc=example,dc=org
+ 

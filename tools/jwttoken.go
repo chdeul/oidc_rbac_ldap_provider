@@ -16,6 +16,7 @@ const (
 	secretkey = "ma_Clef!Secrète."
 )
 
+// Var globale pour client oidc local
 var SsoLogoutUrl string
 
 func ExtractJwt(r *http.Request) string {
@@ -137,10 +138,11 @@ func JwtRemoveAndTransmit(w http.ResponseWriter) {
 	http.SetCookie(w, &cook)
 }
 
-// For SSO login/logout
+// For SSO client local login/logout ( opclient / rest )
 func SetOidcLogoutUrl(url string) {
 	SsoLogoutUrl = url
 }
+
 func GetOidcLogoutUrl() string {
 	return SsoLogoutUrl
 }
