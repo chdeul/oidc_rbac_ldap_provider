@@ -32,16 +32,16 @@ func RefFactory() Referentiel {
 	// Annuaire d'utlisateurs dans un fichier  .csv  (fileref.go)
 	switch tools.Cfg.Ref.Type {
 	case "file":
-		ref, _ = NewRefFile(tools.Cfg.Ref.Path) // Csv file
+		ref, _ = NewRefFile() // Csv file
 
 	case "rest":
-		ref, _ = NewRefRest(tools.Cfg.Ref.Path) // Api rest
+		ref, _ = NewRefRest() // Api rest
 
 	case "sql":
-		ref, _ = NewRefSql(tools.Cfg.Ref.Path) // Sql db
+		ref, _ = NewRefSql() // Sql db
 
 	case "ldap":
-		ref, _ = NewRefLdap(tools.Cfg.Ref.Path) // Ldap
+		ref, _ = NewRefLdap() // Ldap
 
 		// Rien d'autres implémenté pour le moment
 	default:

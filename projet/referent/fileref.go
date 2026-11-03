@@ -21,10 +21,10 @@ type RefFile struct {
 	maxuser int
 }
 
-func NewRefFile(filename string) (*RefFile, error) {
+func NewRefFile() (*RefFile, error) {
 
 	// Lire le fichier csv
-	tab := tables.ReadUsers(filename)
+	tab := tables.ReadUsers(tools.Cfg.Ref.Path)
 	max := len(tab)
 
 	// Verifier syntaxe des usernames

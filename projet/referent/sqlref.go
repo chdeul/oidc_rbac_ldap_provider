@@ -35,7 +35,7 @@ type RefSql struct {
 	cfg  *SqlConfig
 }
 
-func NewRefSql(filename string) (*RefSql, error) {
+func NewRefSql() (*RefSql, error) {
 
 	// Config yml : doit mapper sur un tableau de User
 	var cfgSql SqlConfig

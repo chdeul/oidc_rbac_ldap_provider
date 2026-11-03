@@ -17,6 +17,12 @@ type DestCfg struct {
 	CertFile    string
 }
 
+type RefCfg struct {
+	Type    string
+	Path    string // filename, ldapurl, sqlurl, resturl
+	Filters map[string]string
+}
+
 // Structure de données de config
 type Config struct {
 	Logging string
@@ -41,12 +47,10 @@ type Config struct {
 			Port     string
 		}
 	}
-	Ref struct {
-		Type    string
-		Path    string
-		Filters map[string]string
-	}
-	Dest  map[string]DestCfg
+	Ref RefCfg
+
+	Dest map[string]DestCfg
+
 	WebUi struct {
 		Active      bool
 		ContextPath string

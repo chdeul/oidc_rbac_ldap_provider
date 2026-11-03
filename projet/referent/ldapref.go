@@ -43,7 +43,7 @@ type RefLdap struct {
 	cfg  *LdapConfig
 }
 
-func NewRefLdap(filename string) (*RefLdap, error) {
+func NewRefLdap() (*RefLdap, error) {
 
 	// Config yml : doit mapper sur un tableau de User
 	var cfgLdap LdapConfig

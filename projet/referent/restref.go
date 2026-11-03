@@ -16,7 +16,7 @@ type RefRest struct {
 	cfg *interf.RestInputConfig
 }
 
-func NewRefRest(filename string) (*RefRest, error) {
+func NewRefRest() (*RefRest, error) {
 
 	// Config yml : doit mapper sur un tableau de User
 	cfg, err := interf.LoadInputConfig(tools.Cfg.Ref.Path)

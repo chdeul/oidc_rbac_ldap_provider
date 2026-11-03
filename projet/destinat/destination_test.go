@@ -3,8 +3,15 @@ package destinat
 import (
 	obj "main/objets"
 	"main/tools"
+	"os"
 	"testing"
 )
+
+// Commun package
+func TestMain(m *testing.M) {
+	tools.LoadConfig("../../data/test")
+	os.Exit(m.Run())
+}
 
 // Common test Function  for all destination
 func testDestination(t *testing.T, de Destination, role1, role2 string) {
