@@ -1,5 +1,5 @@
 #id;identifiant;password;mail;nom complet;roles
-1;antoine;chdeul;chdeul@localhost.loc;Antoine Chdeul;Administration|Chef
+1;antoine;$1$lL70o3Wu$CDhjo.1nubit0qJtm5H5v.;chdeul@localhost.loc;Antoine Chdeul;Administration|Chef
 2;mdupont;f3k9t2ap;mdupont@localhost.loc;Marie DUPONT;Edition
 3;jmartin;9as4df2k;jmartin@localhost.loc;Jean MARTIN;
 4;sbernard;2kf93pa1;sbernard@localhost.loc;Sophie BERNARD;Manager|GRH

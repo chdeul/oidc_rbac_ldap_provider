@@ -1,0 +1,22 @@
+HeadAuth: "string"
+BaseUrl:  "string"
+CertFile: "string"
+Insecure: bool
+Routes:  
+  Source:
+    Method: "string"
+    Path:   "string"
+    Header: 
+      - xxx : xxx
+  Target:
+  - Method:    "string"
+    URL:       "string"
+    Header:    
+    - xxx : xxx
+    Body:      
+    - xxx : any
+    JsScript:  "string"
+    MapArray:  "string"
+    MapObject: 
+    - xxx : any
+

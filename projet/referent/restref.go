@@ -18,8 +18,13 @@ type RefRest struct {
 func NewRefRest() (*RefRest, error) {
 
 	// Config yml : doit mapper sur un tableau de User
-	cfg, err := interf.LoadInputConfig(tools.Cfg.Ref.Path)
-	return &RefRest{cfg: cfg}, err
+	var cfg interf.RestInputConfig
+	err := tools.LoadAnyConfig(tools.Cfg.Ref.Path, &cfg)
+	return &RefRest{cfg: &cfg}, err
+}
+
+func (rf *RefRest) Type() string {
+	return "rest"
 }
 
 func (rf *RefRest) Close() {

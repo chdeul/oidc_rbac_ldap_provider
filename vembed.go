@@ -36,7 +36,7 @@ func readFile(fic string) ([]byte, error) {
 		// lit le fichier embarqué dans le binaire à la compilation
 		return vues.ReadFile(fic)
 	}
-	// lit le disque
+	// lit le disque ( relative to work sir where is index.html )
 	return os.ReadFile(fic)
 }
 

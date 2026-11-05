@@ -15,7 +15,9 @@ func TestMain(m *testing.M) {
 
 func TestMail(t *testing.T) {
 
-	SetupSmtp("localhost", "1025", "mailpit", "chdeul")
+	svrConfig := tools.SmtpCfg{Host: "localhost", Port: "1025", Ident: "mailpit", Password: "chdeul"}
+
+	SetupSmtp(&svrConfig)
 
 	from := "chdeul@localhost.loc"
 

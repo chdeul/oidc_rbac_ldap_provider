@@ -2,7 +2,6 @@ package referent
 
 import (
 	"fmt"
-	"log"
 	obj "main/objets"
 	"main/tools"
 	"strings"
@@ -17,9 +16,11 @@ import (
 
 type LdapConfig struct {
 	Database struct {
-		Host string
-		Port string
-		Root string
+		Host     string
+		Port     string
+		Root     string
+		Bind     string
+		Password string
 	}
 	Directory struct {
 		Users struct {
@@ -48,24 +49,31 @@ func NewRefLdap() (*RefLdap, error) {
 	// Config yml : doit mapper sur un tableau de User
 	var cfgLdap LdapConfig
 	err := tools.LoadAnyConfig(tools.Cfg.Ref.Path, &cfgLdap)
-	if err != nil {
-		return nil, err
-	}
+	tools.AssertError(err, "Referentiel config")
+
 	// Url de connection  (TODO slapd)
 	ldapInfo := fmt.Sprintf("ldap://%s:%s", cfgLdap.Database.Host, cfgLdap.Database.Port)
 
 	// Connection open
 	ret := RefLdap{cfg: &cfgLdap}
 	ret.conn, err = ldap.DialURL(ldapInfo)
-	if ret.conn == nil || err != nil {
-		log.Println(err)
+	if !tools.Check(ret.conn != nil && err == nil, "Referentiel connection") {
 		return nil, err
 	}
 
-	// Anonymous read ldap (username agrements for trace)
-	err = ret.conn.UnauthenticatedBind("agrements")
+	if cfgLdap.Database.Password == "" {
+		// Anonymous read ldap : userPassword will be empty
+		err = ret.conn.UnauthenticatedBind("")
+	} else {
+		// Auth : with reading of user Password
+		err = ret.conn.Bind(cfgLdap.Database.Bind, cfgLdap.Database.Password)
+	}
 	return &ret, err
 
+}
+
+func (rf *RefLdap) Type() string {
+	return "ldap"
 }
 
 func (rf *RefLdap) Close() {
@@ -85,7 +93,7 @@ func (rf *RefLdap) SearchUser(id string) []obj.User {
 	usersDn := rf.cfg.Directory.Users.Path + "," + rf.cfg.Database.Root
 
 	att := strings.Split(rf.cfg.Directory.Users.Fields, "|")
-	if len(att) != 5 {
+	if !tools.Assert(len(att) == 6, "Ref Ldap fields") {
 		return nil
 	}
 	// Filter on objets of users,and this identifiant pattern
@@ -96,20 +104,22 @@ func (rf *RefLdap) SearchUser(id string) []obj.User {
 
 	// Search for the matching usernames
 	sr, err := rf.conn.Search(searchRequest)
-	if err != nil {
-		log.Println(err)
+	if !tools.CheckError(err, "Ldap search user") {
 		return nil
 	}
+
 	// Get tables
 	ret := make([]obj.User, len(sr.Entries))
 	for i, entry := range sr.Entries {
+		tools.Check(len(entry.Attributes) == 6, "Ldap search att")
 		// Get essentials attributes
 		user := obj.User{
 			Uid:         entry.GetAttributeValue(att[0]),
 			Identifiant: entry.GetAttributeValue(att[1]),
 			NomComplet:  entry.GetAttributeValue(att[2]),
 			AdresseMail: entry.GetAttributeValue(att[3]),
-			Roles:       entry.GetAttributeValue(att[4])}
+			MotDePasse:  entry.GetAttributeValue(att[4]),
+			Roles:       entry.GetAttributeValue(att[5])}
 		ret[i] = user
 	}
 	return ret
@@ -123,7 +133,7 @@ func (rf *RefLdap) SearchGroup(id string) []obj.User {
 		return nil
 	}
 	att := strings.Split(rf.cfg.Directory.Users.Fields, "|")
-	if len(att) != 4 {
+	if !tools.Assert(len(att) == 6, "Ref Ldap fields") {
 		return nil
 	}
 
@@ -137,8 +147,7 @@ func (rf *RefLdap) SearchGroup(id string) []obj.User {
 
 	// Search for the matching Group
 	sr, err := rf.conn.Search(searchRequest)
-	if err != nil {
-		log.Println(err)
+	if !tools.CheckError(err, "Ldap search group") {
 		return nil
 	}
 	// Make users tables
@@ -171,8 +180,7 @@ func getUser(conn *ldap.Conn, dn string, att []string) *obj.User {
 
 	// Search for the username
 	sr, err := conn.Search(searchRequest)
-	if err != nil {
-		log.Println(err)
+	if !tools.CheckError(err, "Ldap search user") {
 		return nil
 	}
 	// Must be unique
@@ -185,7 +193,8 @@ func getUser(conn *ldap.Conn, dn string, att []string) *obj.User {
 		Identifiant: sr.Entries[0].GetAttributeValue(att[1]),
 		NomComplet:  sr.Entries[0].GetAttributeValue(att[2]),
 		AdresseMail: sr.Entries[0].GetAttributeValue(att[3]),
-		Roles:       sr.Entries[0].GetAttributeValue(att[4])}
+		MotDePasse:  sr.Entries[0].GetAttributeValue(att[4]),
+		Roles:       sr.Entries[0].GetAttributeValue(att[5])}
 	return &user
 }
 

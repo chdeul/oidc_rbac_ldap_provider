@@ -9,6 +9,7 @@ import (
 
 // Interface des types de Référentiels gérés
 type Referentiel interface {
+	Type() string
 
 	// Recherche un utilisateur via son identifiant, ou une partie
 	// Retourne une table d'utilisateurs trouvés (un seul en général)

@@ -1,6 +1,7 @@
 package interf
 
 import (
+	"main/tools"
 	"os"
 
 	"github.com/dop251/goja"
@@ -8,8 +9,8 @@ import (
 
 func executeJsScript(filename string, input []byte) []byte {
 
-	// Load js code
-	javascript, err := os.ReadFile(filename)
+	// Load js code ( relative to Workspace Dir )
+	javascript, err := os.ReadFile(tools.CfgFilename(filename))
 	if err != nil {
 		return nil
 	}

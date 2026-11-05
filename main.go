@@ -28,14 +28,13 @@ func main() {
 	tools.Info("Début Agréments")
 
 	// TODO Internationnalisation English
+	// time.LoadLocation("Europe/Paris")
 
-	// Initialisation  Config
-	//time.LoadLocation("Europe/Paris")
-	tools.LoadConfig(".")
+	// Initialisation  Config ( relative to env WORKSPACE_DIR )
+	tools.LoadConfig("config.yml")
 
 	// Config envoi Mail
-	cs := tools.Cfg.Server.Smtp
-	interf.SetupSmtp(cs.Host, cs.Port, cs.Ident, cs.Password)
+	interf.SetupSmtp(&tools.Cfg.Server.Smtp)
 
 	// ---- Batchs ----
 

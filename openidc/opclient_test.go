@@ -6,6 +6,7 @@ import (
 	storage "main/openidc/Storage"
 	"main/tools"
 	"net/http"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -18,10 +19,16 @@ import (
 		users:pwd    dwho:dwho  rtyler:rtyler   or  msmith:msmith
 */
 
+// Commun package
+func TestMain(m *testing.M) {
+	os.Exit(m.Run())
+}
+
 func TestOidcClient(t *testing.T) {
+	//tools.Recover()
 
 	// OPClient needs config
-	err := tools.LoadAnyConfig("../data/test/wsweetoidc.yml", &tools.Cfg)
+	err := tools.LoadAnyConfig("data/test/wsweetoidc.yml", &tools.Cfg)
 	tools.TEcheck(t, err, "Load Any Config")
 
 	// Serveur web à lancer
@@ -83,7 +90,7 @@ func TestOidcClient(t *testing.T) {
 func TestOidcServer(t *testing.T) {
 
 	// OPClient needs config
-	err := tools.LoadAnyConfig("../data/test/locsvroidc.yml", &tools.Cfg)
+	err := tools.LoadAnyConfig("data/test/locsvroidc.yml", &tools.Cfg)
 	tools.TEcheck(t, err, "Load Any Config")
 
 	ustore := storage.NewUserStore("https://localhost:8080/oidc/")

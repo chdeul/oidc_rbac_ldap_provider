@@ -14,22 +14,15 @@ import (
 )
 
 // Config lecture seule
-var smtpHost string
-var smtpPort string
-var smtpIdent string
-var smtpPassword string
 var tlsConfig *tls.Config
+var svrConfig *tools.SmtpCfg
 
 // TODO Certificat propre éventuel à configurer
 
 // Fait une seule fois à l'init de l'application
-func SetupSmtp(host, port, ident, pass string) {
+func SetupSmtp(cfg *tools.SmtpCfg) {
 
-	// Configuré en yml
-	smtpHost = host
-	smtpPort = port
-	smtpIdent = ident
-	smtpPassword = pass
+	svrConfig = cfg
 
 	// Charger le certificat racine (CA) dans un pool
 	pool := x509.NewCertPool()
@@ -51,7 +44,7 @@ func SetupSmtp(host, port, ident, pass string) {
 	tlsConfig = &tls.Config{
 		RootCAs:            pool,
 		InsecureSkipVerify: false,
-		ServerName:         smtpHost,
+		ServerName:         svrConfig.Host,
 		MinVersion:         tls.VersionTLS12,
 	}
 }
@@ -64,7 +57,7 @@ func EncodeSubject(subject string) string {
 func MySendMail(from string, dest string, data []byte) error {
 
 	// Connect using TLS
-	rawConn, err := net.DialTimeout("tcp", smtpHost+":"+smtpPort, 10*time.Second)
+	rawConn, err := net.DialTimeout("tcp", svrConfig.Host+":"+svrConfig.Port, 10*time.Second)
 	if err != nil {
 		return err
 	}
@@ -76,7 +69,7 @@ func MySendMail(from string, dest string, data []byte) error {
 	//}
 
 	conn := rawConn
-	if strings.HasSuffix(smtpPort, "465") {
+	if strings.HasSuffix(svrConfig.Port, "465") {
 		// SMTPS Implicite : port 465  ou 2465 ou 8465  ...
 		tlsConn := tls.Client(rawConn, tlsConfig)
 		if err = tlsConn.Handshake(); err != nil {
@@ -86,7 +79,7 @@ func MySendMail(from string, dest string, data []byte) error {
 		conn = tlsConn
 	}
 	// Check connection
-	c, err := smtp.NewClient(conn, smtpHost)
+	c, err := smtp.NewClient(conn, svrConfig.Host)
 	if err != nil {
 		conn.Close()
 		return err
@@ -94,7 +87,7 @@ func MySendMail(from string, dest string, data []byte) error {
 	defer c.Close()
 
 	// Vérifier que le serveur supporte STARTTLS
-	if !strings.HasSuffix(smtpPort, "465") {
+	if !strings.HasSuffix(svrConfig.Port, "465") {
 		//if ok, _ := c.Extension("STARTTLS"); !ok {
 		err = c.StartTLS(tlsConfig)
 		if err != nil {
@@ -112,7 +105,7 @@ func MySendMail(from string, dest string, data []byte) error {
 	}
 
 	// Auth SMTP : classic  Plain on StartTLS
-	auth := smtp.PlainAuth("", smtpIdent, smtpPassword, smtpHost)
+	auth := smtp.PlainAuth("", svrConfig.Ident, svrConfig.Password, svrConfig.Host)
 	if err = c.Auth(auth); err != nil {
 		return err
 	}

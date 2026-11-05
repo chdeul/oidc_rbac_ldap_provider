@@ -9,12 +9,15 @@ import (
 
 // Commun package
 func TestMain(m *testing.M) {
-	tools.LoadConfig("../../data/test")
+	tools.LoadConfig("data/test/config.yml")
 	os.Exit(m.Run())
 }
 
 // Common test Function  for all destination
 func testDestination(t *testing.T, de Destination, role1, role2 string) {
+
+	tools.Recover()
+
 	tools.Tcheck(t, de, "NewDestXxxxx")
 
 	// users methods

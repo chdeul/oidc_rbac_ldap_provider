@@ -150,7 +150,7 @@ func ldapSearchExpr(conn any, rech string) []*obj.User {
 	// Filter on objets of users,and this identifiant pattern
 	searchRequest := ldap.NewSearchRequest(usersDn,
 		ldap.ScopeChildren, ldap.NeverDerefAliases, 0, 0, false,
-		rech, []string{"uid", "sn", "cn", "mail", "title"}, nil)
+		rech, []string{"uid", "sn", "cn", "mail", "userPassword", "title"}, nil)
 
 	// Search for the matching usernames
 	sr, err := l.Search(searchRequest)
@@ -167,6 +167,7 @@ func ldapSearchExpr(conn any, rech string) []*obj.User {
 			Identifiant: entry.GetAttributeValue("sn"),
 			AdresseMail: entry.GetAttributeValue("mail"),
 			Roles:       entry.GetAttributeValue("title"),
+			MotDePasse:  entry.GetAttributeValue("userPassword"),
 			NomComplet:  entry.GetAttributeValue("cn")}
 		ret[i] = &user
 	}
@@ -217,6 +218,8 @@ func LdapAddUser(conn any, user *obj.User) error {
 	addRequest.Attribute("sn", []string{user.Identifiant})
 	addRequest.Attribute("cn", []string{user.NomComplet})
 	addRequest.Attribute("mail", []string{user.AdresseMail})
+	addRequest.Attribute("userPassword", []string{user.MotDePasse})
+
 	if user.Roles != "" {
 		addRequest.Attribute("title", []string{user.Roles})
 	}

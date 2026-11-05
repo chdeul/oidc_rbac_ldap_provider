@@ -110,7 +110,7 @@ func OpClient() error {
 	}
 
 	// Trusted https certificates
-	ctx := tools.LoadTrustedCertFiles(context.Background())
+	ctx := tools.CtxLoadTrustedCertFiles(context.Background(), tools.Cfg.Openidc.Client.RootCA, false)
 
 	// Register as oidc client ( call server oidc .well-known/openid-configuration )
 	var err error

@@ -42,6 +42,9 @@ func addTrigger(db *sql.DB, psqlInfo string, tableName string) {
 
 	_, err := db.Query(install)
 	tools.CheckError(err, "Cannot set postgresql trigger : %v", err)
+}
+
+func waitTrigger(psqlInfo string, tableName string) {
 
 	// Create a new listener
 	listener := pq.NewListener(psqlInfo, 10*time.Second, time.Minute,
@@ -50,7 +53,7 @@ func addTrigger(db *sql.DB, psqlInfo string, tableName string) {
 		})
 
 	// Subscribe to a channel
-	err = listener.Listen(tableName + "_pgsqlchannel")
+	err := listener.Listen(tableName + "_pgsqlchannel")
 	tools.CheckError(err)
 
 	tools.Info("Listening for Postgresql notifications...")

@@ -44,13 +44,6 @@ type RouteConfig struct {
 	}
 }
 
-// Charge la configuration
-func LoadInputConfig(path string) (*RestInputConfig, error) {
-	var cfg RestInputConfig
-	err := tools.LoadAnyConfig(path, &cfg)
-	return &cfg, err
-}
-
 func escape(str string) string {
 	str = strings.ReplaceAll(str, "?", "\\?")
 	str = strings.ReplaceAll(str, "+", "\\+")

@@ -7,10 +7,7 @@ import (
 	"testing"
 )
 
-// Testé avec OpenLDAP en container dinkel/openldap,  vide
-// --env SLAPD_DOMAIN=ldap.example.org
-// --env SLAPD_PASSWORD=admin123
-// --publish 389:389
+// Prerequis  une base openldap qui tourne
 
 func TestMain(m *testing.M) {
 	os.Exit(m.Run())
@@ -22,18 +19,18 @@ func TestLdap(t *testing.T) {
 
 	l, e = LdapOpen("ldap://localhost:389", "dc=ldap,dc=example,dc=org", "admin123")
 	tools.Tcheck(t, l, "LdapOpen")
-	tools.Tcheck(t, e, "LdapOpen")
+	tools.TEcheck(t, e, "LdapOpen")
 
 	e = LdapAddUser(l, &obj.User{Uid: "111", Identifiant: "utest", NomComplet: "Un Test", AdresseMail: "un.test@localhost.org"})
-	tools.Tcheck(t, e, "LdapAddUser")
+	tools.TEcheck(t, e, "LdapAddUser")
 
 	e = LdapSetPassword(l, "utest", "AbcdEf=$123")
-	tools.Tcheck(t, e, "LdapSetPassword")
+	tools.TEcheck(t, e, "LdapSetPassword")
 
 	LdapClose(l)
 	l, e = LdapOpen("ldap://localhost:389", "dc=ldap,dc=example,dc=org", "")
 	tools.Tcheck(t, l, "LdapOpen")
-	tools.Tcheck(t, e, "LdapOpen")
+	tools.TEcheck(t, e, "LdapOpen")
 
 	u := LdapGetUser(l, "utest")
 	tools.Tcheck(t, u != nil && u.NomComplet == "Un Test" && u.AdresseMail == "un.test@localhost.org", "LdapGetUser")
@@ -44,37 +41,37 @@ func TestLdap(t *testing.T) {
 	LdapClose(l)
 	l, e = LdapOpen("ldap://localhost:389", "dc=ldap,dc=example,dc=org", "admin123")
 	tools.Tcheck(t, l, "LdapOpen")
-	tools.Tcheck(t, e, "LdapOpen")
+	tools.TEcheck(t, e, "LdapOpen")
 
 	e = LdapUpdateUser(l, &obj.User{Uid: "111", Identifiant: "utest", NomComplet: "Un-Test", AdresseMail: "un.test@localhost.org"})
-	tools.Tcheck(t, e, "LdapUpdateUser")
+	tools.TEcheck(t, e, "LdapUpdateUser")
 
 	u = LdapGetUser(l, "utest")
 	tools.Tcheck(t, u != nil && u.NomComplet == "Un-Test" && u.AdresseMail == "un.test@localhost.org", "LdapGetUser")
 
 	e = LdapAddGroup(l, "UnGroupe", "description...")
-	tools.Tcheck(t, e, "LdapAddGroup")
+	tools.TEcheck(t, e, "LdapAddGroup")
 
 	e = LdapAddMember(l, "UnGroupe", "utest")
-	tools.Tcheck(t, e, "LdapAddMember")
+	tools.TEcheck(t, e, "LdapAddMember")
 
 	m := LdapGetGroup(l, "UnGroupe")
 	tools.Tcheck(t, len(m) == 2 && m[1] == "utest" && m[0] == "admin", "LdapGetGroup")
 
 	e = LdapDeleteMember(l, "UnGroupe", "utest")
-	tools.Tcheck(t, e, "LdapDeleteMember")
+	tools.TEcheck(t, e, "LdapDeleteMember")
 
 	m = LdapGetGroup(l, "UnGroupe")
 	tools.Tcheck(t, len(m) == 1 && m[0] == "admin", "LdapGetGroup")
 
 	e = LdapDeleteGroup(l, "UnGroupe")
-	tools.Tcheck(t, e, "LdapDeleteGroup")
+	tools.TEcheck(t, e, "LdapDeleteGroup")
 
 	m = LdapGetGroup(l, "UnGroupe")
 	tools.Tcheck(t, len(m) == 0, "LdapGetGroup")
 
 	e = LdapDeleteUser(l, "utest")
-	tools.Tcheck(t, e, "LdapDeleteUser")
+	tools.TEcheck(t, e, "LdapDeleteUser")
 
 	u = LdapGetUser(l, "utest")
 	tools.Tcheck(t, u == nil, "LdapGetUser")

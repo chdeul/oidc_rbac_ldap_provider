@@ -56,6 +56,10 @@ func NewRefSql() (*RefSql, error) {
 	return &ret, nil
 }
 
+func (rf *RefSql) Type() string {
+	return "sql"
+}
+
 func (rf *RefSql) Close() {
 	if rf.conn != nil {
 		rf.conn.Close()

@@ -40,6 +40,10 @@ func NewRefFile() (*RefFile, error) {
 	return &RefFile{users: tab, maxuser: max}, nil
 }
 
+func (rf *RefFile) Type() string {
+	return "file"
+}
+
 func (rf *RefFile) Close() {
 	rf.users = nil
 	rf.maxuser = 0

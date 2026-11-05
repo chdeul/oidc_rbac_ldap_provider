@@ -3,8 +3,8 @@ server:
   listenip: 0.0.0.0
   port: 8080  
   protocol: https
-  certfile: ../custom/server-chain.crt
-  keyfile: ../custom/server.key
+  certfile: custom/server-chain.crt
+  keyfile: custom/server.key
   backurl: https://localhost:8080
   usedurl: https://localhost:8080
   tokensecret: MonPrecieux 

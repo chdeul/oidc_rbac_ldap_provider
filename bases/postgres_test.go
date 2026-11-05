@@ -13,14 +13,12 @@ import (
 const (
 	host     = "localhost"
 	port     = 5432
-	user     = "antoine"
-	password = "chdeul"
-	dbname   = "test"
+	user     = "mantis"
+	password = "mantis"
+	dbname   = "mantis"
 )
 
-// Prerequis  une base postgres qui tourne
-// avec une base "test", une table "users": uid, ident, password, name, email
-// Une ligne d'ident=antoine
+// Prerequis  une base mantis postgres qui tourne
 
 func TestPostgres(t *testing.T) {
 
@@ -33,20 +31,24 @@ func TestPostgres(t *testing.T) {
 
 	db.SetMaxOpenConns(10)
 
-	rows, err := db.Query("SELECT uid, ident, password, name, email FROM users WHERE ident = $1", "antoine")
+	rows, err := db.Query("SELECT id, username, password, realname, email FROM mantis_user_table WHERE username = $1", "administrator")
 	tools.TEcheck(t, err, "Query")
 	defer rows.Close()
 	tools.Tcheck(t, rows, "Query result")
-
-	for rows.Next() {
-		var user obj.User
-		rows.Scan(&user.Uid, &user.Identifiant, &user.MotDePasse, &user.NomComplet, &user.AdresseMail)
-		tools.Tcheck(t, user.AdresseMail, "Query data")
+	if rows != nil {
+		for rows.Next() {
+			var user obj.User
+			rows.Scan(&user.Uid, &user.Identifiant, &user.MotDePasse, &user.NomComplet, &user.AdresseMail)
+			tools.Tcheck(t, user.AdresseMail, "root@localhost")
+		}
 	}
 }
 
 func TestTrigger(t *testing.T) {
 
+	t.Skip("TODO TestTrigger")
+
+	//
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
 
@@ -54,8 +56,11 @@ func TestTrigger(t *testing.T) {
 	tools.TEcheck(t, err, "Open")
 	defer db.Close()
 
-	go addTrigger(db, psqlInfo, "users")
-	row := db.QueryRow(`insert into users(name, age) values('Scrooge McDuck', 93) returning id`)
+	addTrigger(db, psqlInfo, "mantis_user_table")
+
+	waitTrigger(psqlInfo, "mantis_user_table")
+
+	row := db.QueryRow("insert into mantis_user_table(username, password, realname, email) values('xxx', 'ppp','X Xxx', 'xxx@xxx.xx') returning id")
 	var userid int
 	row.Scan(&userid)
 

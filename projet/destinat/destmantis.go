@@ -1,11 +1,8 @@
 package destinat
 
 import (
-	"crypto/tls"
-	"crypto/x509"
 	obj "main/objets"
 	"main/tools"
-	"os"
 	"strconv"
 	"strings"
 
@@ -36,17 +33,9 @@ func NewDestMantis() (*DestMantis, error) {
 		// client.SetAuthToken(cfg.HeadAuth)
 		client.SetHeader("Authorization", cfg.TokenPasswd)
 
-		// Trust mantis cert
-		if cfg.CertFile != "" {
-			certPool := x509.NewCertPool()
-			pem, err := os.ReadFile(cfg.CertFile)
-			tools.CheckError(err)
-			certPool.AppendCertsFromPEM(pem)
-			client.SetTLSClientConfig(&tls.Config{
-				RootCAs:            certPool,
-				InsecureSkipVerify: cfg.Insecure,
-			})
-		}
+		// Trust mantis cert if any
+		tools.RestyLoadTrustedCertFiles(client, cfg.CertFile, cfg.Insecure)
+
 		// Memorize configuration
 		dest := DestMantis{cfg: &cfg, mbt: client}
 		dest.api = dest.cfg.BaseUrl + dest.cfg.IdentAccess

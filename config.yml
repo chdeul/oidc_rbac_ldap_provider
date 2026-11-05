@@ -10,8 +10,8 @@ server:
   listenip: 0.0.0.0
   port: 8088   
   protocol: http
-  #certfile: server-chain.crt
-  #keyfile: server.key
+  #certfile: custom/server-chain.crt
+  #keyfile: custom/ server.key
   backurl: http://localhost:8088
   usedurl: http://localhost:8088
   tokensecret: MonPrecieux 
@@ -40,6 +40,8 @@ dest:
   #  baseurl: "http://localhost:8086/mantis"
   #  identaccess: /api/rest
   #  tokenpasswd: 2YlTDV80nt8ZQhleYfi_CLfoyLZ1gR1T
+  #  certfile: "custom/rootCA.pem"
+  #  insecure: false
 
 # Interface d'administration
 webui:
@@ -69,7 +71,7 @@ openidc:
     uidfield: sub       # or preferred_username
     agecookie: session  # or age in seconds 43200=12h
     createuser: false   # auto create user in ldap
-    rootca: rootCA.pem
+    rootca: custom/rootCA.pem
   
   # Serve as SSO oidc  on UsedUrl
   server:

@@ -1,4 +1,8 @@
 ### Fichier de configuration -Test ###
+server:
+  listenip: 0.0.0.0
+  port: 8080   
+  protocol: http
 
 # client openid connect
 openidc:
@@ -16,5 +20,5 @@ openidc:
     loginpath:   "/client/login"
     agecookie:   "session"
     createuser:  false
-    rootca:      ""
+    #rootca:      ""
 

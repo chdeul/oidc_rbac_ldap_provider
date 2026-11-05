@@ -2,12 +2,14 @@ database:
   host:     "localhost"
   port:     "389"
   root:     "dc=ldap,dc=example,dc=org"
+  bind:     "cn=admin,dc=ldap,dc=example,dc=org"
+  password: "admin123"
 directory:
   users:
     scope: Children     # or BaseObject SingleLevel  WholeSubtree 
     path: "ou=users"
     search: "(&(objectClass=inetOrgPerson)(sn=%s))"
-    fields: "uid|sn|cn|mail|title"  # In order: Uid|Identifiant|NomComplet|AdresseMail|Roles
+    fields: "uid|sn|cn|mail|userPassword|title"  # In order: Uid|Identifiant|NomComplet|AdresseMail|Password|Roles
   group:
     scope: SingleLevel     
     path: "ou=groups"

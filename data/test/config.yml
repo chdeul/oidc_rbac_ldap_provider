@@ -5,10 +5,7 @@ logtime: false
 # Référentiel - Annuaire d'entreprise
 ref:
   type: file
-  path: ../../data/test/users.csv
-  #path: ldap://admin:pass@localhost:389/ou=users
-  #path: http://authorisation:token@localhost:8080/api/rest
-  #path: psql://user:pass@localhost:5432/mantis
+  path: data/test/users.csv
   filters:
     societe : "@xxxx.com|@zzzz.com" 
     external : "! @localhost.loc"
@@ -23,9 +20,9 @@ dest:
     baseurl: "http://localhost:8080"
     identaccess: /api/rest
     tokenpasswd: 2YlTDV80nt8ZQhleYfi_CLfoyLZ1gR1T
-    insecure: true
   gitlab:
     baseurl: "https://gitlab.loc:8888"
     identaccess: /api/v4
     tokenpasswd: "glpat-Q5etHm9n57pu2acO1Lofm286MQp1OjEH.01.0w0k107yg"
-    insecure: true
+    certfile: custom/rootCA.pem
+    insecure: false

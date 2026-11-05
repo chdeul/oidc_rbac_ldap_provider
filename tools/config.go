@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"go.yaml.in/yaml/v4"
 )
@@ -13,14 +14,23 @@ type DestCfg struct {
 	BaseUrl     string
 	IdentAccess string
 	TokenPasswd string
-	Insecure    bool
 	CertFile    string
+	Insecure    bool
 }
 
 type RefCfg struct {
 	Type    string
-	Path    string // filename, ldapurl, sqlurl, resturl
+	Path    string
 	Filters map[string]string
+}
+
+type SmtpCfg struct {
+	Ident    string
+	Password string
+	Host     string
+	Port     string
+	CertFile string
+	Insecure bool
 }
 
 // Structure de données de config
@@ -40,12 +50,7 @@ type Config struct {
 		UsedUrl     string
 		BackUrl     string
 		TokenSecret string
-		Smtp        struct {
-			Ident    string
-			Password string
-			Host     string
-			Port     string
-		}
+		Smtp        SmtpCfg
 	}
 	Ref RefCfg
 
@@ -99,6 +104,25 @@ type Config struct {
 // Config globale chargée
 var Cfg Config
 
+// Workspace Dir : root dir of relative config filepath
+var Wsd string // env WORKSPACE_DIR
+
+// init Workspace Dir
+func init() {
+	Wsd = os.Getenv("WORKSPACE_DIR")
+	if !Check(Wsd, "env WORKSPACE_DIR undefined") {
+		Wsd = "."
+	}
+}
+
+// calcule un Chemin relatif au workspace dir
+func CfgFilename(filepath string) string {
+	if !strings.HasPrefix(filepath, "/") {
+		filepath = Wsd + "/" + filepath
+	}
+	return filepath
+}
+
 // Recuperer du json
 func Decode(r *http.Request, obj interface{}) {
 	json.NewDecoder(r.Body).Decode(&obj)
@@ -110,10 +134,10 @@ func Encode(w http.ResponseWriter, data interface{}) {
 	json.NewEncoder(w).Encode(data)
 }
 
-func LoadConfig(dir string) {
+func LoadConfig(filepath string) {
 
 	// Lecture fichier
-	err := LoadAnyConfig(dir+"/config.yml", &Cfg)
+	err := LoadAnyConfig(filepath, &Cfg)
 	AssertError(err, "Load config fail %v", err)
 
 	// Normalisation des context path configuré  "/"" => ""   "/toto" => "/toto"
@@ -138,7 +162,8 @@ func LoadConfig(dir string) {
 // Charge une configuration yaml
 func LoadAnyConfig(filepath string, ptr any) error {
 
-	data, err := os.ReadFile(filepath)
+	// Configuration file path : Relative to workspace dir ( env WORKSPACE_DIR )
+	data, err := os.ReadFile(CfgFilename(filepath))
 	if err != nil {
 		Error("Fichier config %s non trouvé", filepath)
 		return err

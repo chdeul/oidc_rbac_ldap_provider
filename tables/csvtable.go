@@ -3,13 +3,14 @@ package tables
 import (
 	"encoding/csv"
 	"log"
+	"main/tools"
 	"os"
 	"strings"
 )
 
 func readCsv(filename string) [][]string {
 
-	file, err := os.Open(filename)
+	file, err := os.Open(tools.CfgFilename(filename))
 	if err != nil {
 		log.Println(err)
 		return nil
@@ -45,7 +46,7 @@ func readCsv(filename string) [][]string {
 
 func writeCsv(filename string, tab [][]string) error {
 
-	file, err := os.Create(filename)
+	file, err := os.Create(tools.CfgFilename(filename))
 	if err != nil {
 		log.Println(err)
 	}

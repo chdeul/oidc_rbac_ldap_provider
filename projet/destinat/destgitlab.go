@@ -1,12 +1,9 @@
 package destinat
 
 import (
-	"crypto/tls"
-	"crypto/x509"
 	"errors"
 	obj "main/objets"
 	"main/tools"
-	"os"
 	"strconv"
 	"strings"
 
@@ -16,15 +13,8 @@ import (
 // Authorization: Bearer <token_oauth_admin>
 // https://gitlab.example.com/api/v4/projects
 
-type GitlabConf struct {
-	BaseUrl  string
-	HeadAuth string
-	CertFile string
-	Insecure bool
-}
-
 type DestGitlab struct {
-	cfg  *GitlabConf
+	cfg  *tools.DestCfg
 	glab *resty.Client
 }
 
@@ -35,28 +25,20 @@ func (de *DestGitlab) Name() string {
 func NewDestGitlab() (*DestGitlab, error) {
 
 	// Charge la configuration
-	var cfg GitlabConf
-	err := tools.LoadAnyConfig("data/gitlab.yml", &cfg)
-	if err != nil {
-		panic(err)
-	}
-	// cree le client d'API Rest gitlab
-	client := resty.New().SetDebug(false)
-	client.SetAuthToken(cfg.HeadAuth)
+	cfg := tools.Cfg.Dest["gitlab"]
+	if tools.Check(cfg) {
+		// cree le client d'API Rest gitlab
+		client := resty.New().SetDebug(false)
+		client.SetAuthToken(cfg.TokenPasswd)
 
-	// Trust gitlab cert
-	if cfg.CertFile != "" {
-		certPool := x509.NewCertPool()
-		pem, _ := os.ReadFile(cfg.CertFile)
-		certPool.AppendCertsFromPEM(pem)
-		client.SetTLSClientConfig(&tls.Config{
-			RootCAs:            certPool,
-			InsecureSkipVerify: cfg.Insecure,
-		})
+		// Trust gitlab cert if any
+		tools.RestyLoadTrustedCertFiles(client, cfg.CertFile, cfg.Insecure)
+
+		// Memorize configuration
+		dest := DestGitlab{cfg: &cfg, glab: client}
+		return &dest, nil
 	}
-	// Memorize configuration
-	dest := DestGitlab{cfg: &cfg, glab: client}
-	return &dest, err
+	return nil, nil
 }
 
 func (de *DestGitlab) Close() {
