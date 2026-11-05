@@ -2,7 +2,7 @@
     app.component("ui-header", {
         template: "#ui-header"
    });
-//# sourceURL=http://localhost:8080/vues/Public/header.vue
+//# sourceURL=http://localhost:8088/vues/Public/header.vue
 </script>
 
 <template id="ui-header">

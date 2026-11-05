@@ -165,10 +165,10 @@ func ldapSearchExpr(conn any, rech string) []*obj.User {
 		// Get essentials attributes
 		user := obj.User{Uid: entry.GetAttributeValue("uid"),
 			Identifiant: entry.GetAttributeValue("sn"),
+			NomComplet:  entry.GetAttributeValue("cn"),
 			AdresseMail: entry.GetAttributeValue("mail"),
-			Roles:       entry.GetAttributeValue("title"),
 			MotDePasse:  entry.GetAttributeValue("userPassword"),
-			NomComplet:  entry.GetAttributeValue("cn")}
+			Roles:       entry.GetAttributeValue("title")}
 		ret[i] = &user
 	}
 	// User build

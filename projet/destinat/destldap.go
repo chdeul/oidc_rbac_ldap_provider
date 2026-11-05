@@ -43,11 +43,25 @@ func (de *DestLdap) Close() {
 // Methodes d'interface
 
 func (de *DestLdap) SearchUsersRole(prj *obj.Project) []*obj.User {
+	// membres du groupe projet  (pas des autres groupes !)
+	projname := prj.Identifiant
+	members := bases.LdapGetGroup(de.ldap, projname)
+	if len(members) > 0 {
+		tab := make([]*obj.User, len(members))
+		for i, m := range members {
+			ul := bases.LdapSearch(de.ldap, m)
+			if len(ul) == 1 {
+				tab[i] = ul[0]
+			}
+		}
+		return tab
+	}
 	return nil
 }
 
 func (de *DestLdap) GetRole(prj *obj.Project, user *obj.User) string {
-	// Dummy value to forge call of create role (get role is done into)
+	// Dummy value to force call of create role (get role is done into)
+	// Ldap has no role : role <==> (groupe named as role) has member
 	return ""
 }
 

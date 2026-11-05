@@ -107,18 +107,18 @@ func LectureProjet(filename string) {
 		}
 	}
 	// TODO Liste des utilisateurs déclarés ( avec ceux des groupes )
-	ud := users[1:]
+	//ud := users[1:]
 
 	// 2eme passe : Suppression ou Notification de droits non listés dans le projet
 	// Pour chaque outil destination
-	for i, d := range dest {
+	// for i, d := range dest {
 
-		// Projet dans l'outil
-		if projet[i] == nil {
-			continue
-		}
-		removeRights(d, projet[i], ud)
-	}
+	// 	// Projet dans l'outil
+	// 	if projet[i] == nil {
+	// 		continue
+	// 	}
+	// 	removeRights(d, projet[i], ud)
+	// }
 	// Note: Suppression utilisateur dans l'outil pas ici : par batch
 	// car peut avoir des droits sur un autre projet
 }
@@ -157,33 +157,47 @@ func updateRights(projet []*obj.Project, user *obj.User, dest []destinat.Destina
 		if droit[i] != "" {
 
 			// Cherche l'utilisateur dans l'outil
-			ud := d.SearchUsers(user.Identifiant)
+			var userd obj.User
+			udl := d.SearchUsers(user.Identifiant)
 
 			// Si non trouvé : le Crée
-			if len(ud) == 0 {
+			if len(udl) == 0 {
+
+				uid := user.Uid
 				err := d.CreateUser(user)
-				if err != nil {
+				if tools.CheckError(err, "Create User") {
 					continue
 				}
-			} else if len(ud) == 1 {
-				// Trouvé et à mettre à jour
-				if ud[0].AdresseMail != user.AdresseMail || ud[0].NomComplet != user.NomComplet {
-					d.UpdateUser(user)
+				// récupéré avec l'id propre à l'outil
+				userd = *user
+				user.Uid = uid
+
+			} else if len(udl) == 1 {
+
+				// Trouvé ( avec l'id propre à l'outil )
+				userd = *(udl[0])
+
+				// et à mettre à jour si besoin
+				if userd.AdresseMail != user.AdresseMail || userd.NomComplet != user.NomComplet {
+					err := d.UpdateUser(user)
+					tools.CheckError(err, "Update User mail or name")
+					userd.AdresseMail = user.AdresseMail
+					userd.NomComplet = user.NomComplet
 				}
 			} else {
 				tools.Error("utilisateur multiple %s dans %s", user.Identifiant, d.Name())
 				continue
 			}
 			// Créer ou modifier le role pour cet utilisateur et ce projet
-			role := d.GetRole(projet[i], user)
+			role := d.GetRole(projet[i], &userd)
 			if droit[i] != role {
 				if role == "" {
 					// Créer le role pour cet utilisateur et ce projet
-					d.CreateRole(projet[i], user, droit[i])
+					d.CreateRole(projet[i], &userd, droit[i])
 				} else {
 					// Modifier le role pour cet utilisateur et ce projet
 					// TODO  Warning si ancien role < droit[i] nouveau + cas dans group et hors
-					d.UpdateRole(projet[i], user, droit[i])
+					d.UpdateRole(projet[i], &userd, droit[i])
 				}
 			}
 		}

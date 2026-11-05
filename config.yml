@@ -36,22 +36,22 @@ dest:
     baseurl: ldap://localhost:389
     identaccess: dc=ldap,dc=example,dc=org
     tokenpasswd: admin123
-  #mantis:
-  #  baseurl: "http://localhost:8086/mantis"
-  #  identaccess: /api/rest
-  #  tokenpasswd: 2YlTDV80nt8ZQhleYfi_CLfoyLZ1gR1T
-  #  certfile: "custom/rootCA.pem"
-  #  insecure: false
+  mantis:
+    baseurl: "http://localhost:8080"
+    identaccess: /api/rest
+    tokenpasswd: 2YlTDV80nt8ZQhleYfi_CLfoyLZ1gR1T
+#   certfile: "custom/rootCA.pem"
+#   insecure: false
 
 # Interface d'administration
 webui:
   active: true
   contextpath: /agrem
   cache: false   # Dev mode
-  csvapi: true
+  # csvapi: false
   login:
     active: true        # else openidc client active 
-    agecookie: session  # or age in seconds 43200=12h
+    agecookie: "43200"  # session or age in seconds 43200=12h
 
 # Openid connect
 openidc:

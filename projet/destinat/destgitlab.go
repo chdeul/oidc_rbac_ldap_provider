@@ -16,6 +16,7 @@ import (
 type DestGitlab struct {
 	cfg  *tools.DestCfg
 	glab *resty.Client
+	api  string
 }
 
 func (de *DestGitlab) Name() string {
@@ -36,6 +37,7 @@ func NewDestGitlab() (*DestGitlab, error) {
 
 		// Memorize configuration
 		dest := DestGitlab{cfg: &cfg, glab: client}
+		dest.api = dest.cfg.BaseUrl + dest.cfg.IdentAccess
 		return &dest, nil
 	}
 	return nil, nil
@@ -48,7 +50,7 @@ func (de *DestGitlab) Close() {
 	}
 }
 
-// Roles / Levels gitlab-ce
+// Roles / Levels Gitlab-ce
 
 func Role(level int) string {
 	switch level {
@@ -119,7 +121,7 @@ func (de *DestGitlab) SearchProjects(projet string) []*obj.Project {
 			"search": projet,
 		}).
 		SetResult(&result).
-		Get(de.cfg.BaseUrl + "/groups")
+		Get(de.api + "/groups")
 
 	if err != nil {
 		tools.Error("Recherche groups gitlab %v", err)
@@ -143,7 +145,7 @@ func (de *DestGitlab) SearchProjects(projet string) []*obj.Project {
 			"search": projet,
 		}).
 		SetResult(&result).
-		Get(de.cfg.BaseUrl + "/projects")
+		Get(de.api + "/projects")
 
 	if err != nil {
 		tools.Error("Recherche projets gitlab %v", err)
@@ -167,6 +169,46 @@ func (de *DestGitlab) SearchProjects(projet string) []*obj.Project {
 // Methodes d'interface
 
 func (de *DestGitlab) SearchUsersRole(prj *obj.Project) []*obj.User {
+
+	// Table de la réponse gitlab
+	var result []struct {
+		Id       int    `json:"id"`
+		Username string `json:"username"`
+		Name     string `json:"name"`
+		Email    string `json:"email"`
+		Level    int    `json:"access_level"`
+	}
+	categ := "groups"
+	if strings.HasSuffix(prj.Identifiant, ".git") {
+		categ = "projects"
+	}
+	// Chercher les roles  GET /members
+	resp, err := de.glab.R().
+		SetPathParams(map[string]string{
+			"pid": prj.Pid,
+		}).
+		SetResult(&result).
+		Get(de.api + "/" + categ + "/{pid}/members/all")
+
+	if err != nil {
+		tools.Error("Recherche users roles gitlab %v", err)
+		return nil
+	}
+	if resp.StatusCode() == 200 { // Search ok
+
+		// Creer le tableau avec leur role et id gitlab
+		tab := make([]*obj.User, len(result))
+		for i, r := range result {
+			u := new(obj.User)
+			u.Uid = strconv.Itoa(r.Id)
+			u.Identifiant = r.Username
+			u.NomComplet = r.Name
+			u.AdresseMail = r.Email
+			u.Roles = Role(r.Level)
+			tab[i] = u
+		}
+		return tab
+	}
 	return nil
 }
 
@@ -188,17 +230,16 @@ func (de *DestGitlab) GetRole(prj *obj.Project, user *obj.User) string {
 			"uid": user.Uid,
 		}).
 		SetResult(&result).
-		Get(de.cfg.BaseUrl + "/" + categ + "/{pid}/members/all/{uid}")
+		Get(de.api + "/" + categ + "/{pid}/members/all/{uid}")
 
 	if err != nil {
 		tools.Error("Recherche roles gitlab %v", err)
 		return ""
 	}
 	if resp.StatusCode() == 200 { // Search ok
-
 		return Role(result.Level)
 	}
-	tools.Error("Recherche roles gitlab %s", resp.String())
+	// tools.Debug("Aucun role gitlab %s", resp.String())
 	return ""
 }
 
@@ -218,7 +259,7 @@ func (de *DestGitlab) CreateRole(prj *obj.Project, user *obj.User, role string) 
 			"user_id":      user.Uid,
 			"access_level": strconv.Itoa(Level(role)),
 		}).
-		Post(de.cfg.BaseUrl + "/" + categ + "/{pid}/members")
+		Post(de.api + "/" + categ + "/{pid}/members")
 
 	if err != nil {
 		tools.Error("Creer role gitlab %v", err)
@@ -251,7 +292,7 @@ func (de *DestGitlab) UpdateRole(prj *obj.Project, user *obj.User, role string) 
 		SetBody(map[string]string{
 			"access_level": strconv.Itoa(Level(role)),
 		}).
-		Put(de.cfg.BaseUrl + "/" + categ + "/{pid}/members/{uid}")
+		Put(de.api + "/" + categ + "/{pid}/members/{uid}")
 
 	if err != nil {
 		tools.Error("Mise à jour membre gitlab %v", err)
@@ -282,7 +323,7 @@ func (de *DestGitlab) DeleteRole(prj *obj.Project, user *obj.User) error {
 			"pid": prj.Pid,
 			"uid": user.Uid,
 		}).
-		Delete(de.cfg.BaseUrl + "/" + categ + "/{pid}/members/{uid}")
+		Delete(de.api + "/" + categ + "/{pid}/members/{uid}")
 
 	if err != nil {
 		tools.Error("Supprimer utilisateur gitlab %v", err)
@@ -312,7 +353,7 @@ func (de *DestGitlab) SearchUsers(ident string) []*obj.User {
 			"username": ident, // ou morceau
 		}).
 		SetResult(&result).
-		Get(de.cfg.BaseUrl + "/users?search={username}")
+		Get(de.api + "/users?search={username}")
 
 	if err != nil {
 		tools.Error("Recherche utilisateur gitlab %v", err)
@@ -351,7 +392,7 @@ func (de *DestGitlab) CreateUser(user *obj.User) error {
 			"external":              hasExternal,
 		}).
 		SetResult(&result).
-		Post(de.cfg.BaseUrl + "/users")
+		Post(de.api + "/users")
 
 	if err != nil {
 		tools.Error("Creer utilisateur gitlab %v", err)
@@ -379,7 +420,7 @@ func (de *DestGitlab) UpdateUser(user *obj.User) error {
 			"name":     user.NomComplet,
 			"email":    user.AdresseMail,
 		}).
-		Put(de.cfg.BaseUrl + "/users/{id}")
+		Put(de.api + "/users/{id}")
 
 	if err != nil {
 		tools.Error("Mise à jour utilisateur gitlab %v", err)
@@ -403,7 +444,7 @@ func (de *DestGitlab) DeleteUser(user *obj.User) error {
 		SetPathParams(map[string]string{
 			"id": user.Uid,
 		}).
-		Delete(de.cfg.BaseUrl + "/users/{id}")
+		Delete(de.api + "/users/{id}")
 
 	if err != nil {
 		tools.Error("Supprimer utilisateur gitlab %v", err)

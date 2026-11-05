@@ -67,7 +67,7 @@ func packEmbeds(fic string) {
 		}
 		// Lit le fichier src indiqué
 		included, err := readFile(result[1])
-		if tools.CheckError(err, "Fichier v-emded %s non trouvé : %v", result[1], err) {
+		if !tools.CheckError(err, "Fichier v-emded %s non trouvé : %v", result[1], err) {
 			// Fichier non trouvé
 			html = strings.ReplaceAll(html, result[0], "<v-emded src='"+result[1]+"' title='not found'>")
 			continue
@@ -156,7 +156,9 @@ func ServeVue(w http.ResponseWriter, r *http.Request) {
 // Traite requetes en entree ne correspondant pas au context path
 func ServeNone(w http.ResponseWriter, r *http.Request) {
 
-	// No found
-	tools.Warn("Unknown context : %s", r.URL.Path)
+	if !strings.HasPrefix(r.URL.Path, ".well-known/") {
+		// No found
+		tools.Warn("Unknown context : %s", r.URL.Path)
+	}
 	w.WriteHeader(http.StatusNotFound)
 }

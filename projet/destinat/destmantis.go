@@ -54,7 +54,42 @@ func (de *DestMantis) Close() {
 // mantis projects methodes
 
 func (de *DestMantis) SearchUsersRole(prj *obj.Project) []*obj.User {
-	return nil
+
+	var result struct {
+		Users []struct {
+			Id       int    `json:"id"`
+			Name     string `json:"name"`
+			RealName string `json:"real_name"`
+			Email    string `json:"email"`
+			Level    struct {
+				Name string `json:"name"`
+			} `json:"access_level"`
+		} `json:"users"`
+	}
+	resp, err := de.mbt.R().
+		SetPathParam("pid", prj.Pid).
+		SetResult(&result).
+		Get(de.api + "/projects/{pid}/users")
+
+	if err != nil {
+		tools.Error("Role utilisateurs mantis %v", err)
+		return nil
+	}
+	if resp.StatusCode() != 200 {
+		tools.Error("Role utilisateurs mantis %s", resp.String())
+		return nil
+	}
+	tab := make([]*obj.User, len(result.Users))
+	for i, r := range result.Users {
+		u := new(obj.User)
+		u.Uid = strconv.Itoa(r.Id)
+		u.Identifiant = r.Name
+		u.NomComplet = r.RealName
+		u.AdresseMail = r.Email
+		u.Roles = r.Level.Name
+		tab[i] = u
+	}
+	return tab
 }
 
 func (de *DestMantis) SearchProjects(projet string) []*obj.Project {

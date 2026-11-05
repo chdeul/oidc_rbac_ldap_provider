@@ -67,8 +67,12 @@
                     router.push( "/vue/home")
 
                 }).catch( (err) => {
-
-                    this.erreur = "Identifiant ou mot de passe incorrect !"
+                    if ( err.code.startsWith("ECONN") || err.code.startsWith("ERR_NETWORK") )
+                        this.erreur = "Le serveur ne répond pas !"
+                    else if ( err.response && err.response.status == 401 )
+                        this.erreur = "Identifiant ou mot de passe incorrect !"
+                    else
+                        this.erreur = "Erreur ! " + err.message
                 })
             },
             cancel : function() {
@@ -109,7 +113,7 @@
             }
         } 
     })
-//# sourceURL=http://localhost:8080/vues/Auth/login.vue
+//# sourceURL=http://localhost:8088/vues/Auth/login.vue
 </script>
 
 <template id="ui-login">

@@ -23,6 +23,6 @@ dest:
   gitlab:
     baseurl: "https://gitlab.loc:8888"
     identaccess: /api/v4
-    tokenpasswd: "glpat-Q5etHm9n57pu2acO1Lofm286MQp1OjEH.01.0w0k107yg"
+    tokenpasswd: "glpat-d83Qu41VSeWWqnu4B36tIG86MQp1OjJmCA.01.0y0df155b"
     certfile: custom/rootCA.pem
-    insecure: false
+    insecure: true
