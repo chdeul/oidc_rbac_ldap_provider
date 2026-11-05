@@ -1,11 +1,13 @@
 package projet
 
 import (
+	"main/tools"
 	"os"
 	"testing"
 )
 
 func TestMain(m *testing.M) {
+	tools.LoadConfig("data/test/config.yml")
 	os.Exit(m.Run())
 }
 
