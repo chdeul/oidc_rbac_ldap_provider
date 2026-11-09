@@ -1,6 +1,10 @@
 package tables
 
-import obj "main/objets"
+import (
+	"io"
+	obj "main/objets"
+	"net/http"
+)
 
 func NewUser(uid, ident, mp, nc, am, rt string) *obj.User {
 	u := obj.User{Uid: uid, Identifiant: ident, MotDePasse: mp, NomComplet: nc, AdresseMail: am, Roles: rt}
@@ -9,29 +13,51 @@ func NewUser(uid, ident, mp, nc, am, rt string) *obj.User {
 
 func userToStrings(user obj.User) []string {
 	t := make([]string, 6)
-	t[0] = user.Uid
-	t[1] = user.Identifiant
-	t[2] = user.MotDePasse
-	t[3] = user.AdresseMail
-	t[4] = user.NomComplet
+
+	// Order into .csv file
+	t[0] = user.NomComplet
+	t[1] = user.AdresseMail
+	t[2] = user.Identifiant
+	t[3] = user.MotDePasse
+	t[4] = user.Uid
 	t[5] = user.Roles
 	return t
 }
 
-func ReadUsers(filename string) []obj.User {
-
-	tab := readCsv(filename)
+func ReadUsers(into io.Reader) []obj.User {
+	tab := readCsvStream(into)
 	users := make([]obj.User, len(tab))
 	for i, t := range tab {
-		users[i] = obj.User{Uid: t[0], Identifiant: t[1], MotDePasse: t[2], AdresseMail: t[3], NomComplet: t[4], Roles: t[5]}
+		// See order userToStrings
+		users[i] = obj.User{Uid: t[4], Identifiant: t[2], MotDePasse: t[3], AdresseMail: t[1], NomComplet: t[0], Roles: t[5]}
 	}
 	return users
 }
 
-func WriteUsers(users []obj.User, filename string) error {
+func WriteUsers(out io.Writer, users []obj.User) error {
+	tab := make([][]string, len(users)+1)
+	tab[0] = []string{"#nom complet", "mail", "identifiant", "password", "id", "roles titres"}
+	for i, user := range users {
+		tab[i+1] = userToStrings(user)
+	}
+	return writeCsvStream(out, tab)
+}
+
+func ReadUsersFile(filename string) []obj.User {
+
+	tab := readCsv(filename)
+	users := make([]obj.User, len(tab))
+	for i, t := range tab {
+		// See order userToStrings
+		users[i] = obj.User{Uid: t[4], Identifiant: t[2], MotDePasse: t[3], AdresseMail: t[1], NomComplet: t[0], Roles: t[5]}
+	}
+	return users
+}
+
+func WriteUsersFile(users []obj.User, filename string) error {
 
 	tab := make([][]string, len(users)+1)
-	tab[0] = []string{"#id", "identifiant", "password", "mail", "nom complet", "roles titres"}
+	tab[0] = []string{"#nom complet", "mail", "identifiant", "password", "id", "roles titres"}
 	for i, user := range users {
 		tab[i+1] = userToStrings(user)
 	}
@@ -41,7 +67,7 @@ func WriteUsers(users []obj.User, filename string) error {
 func ReadUser(identifiant string, filename string) *obj.User {
 
 	// Cherche dans Table des utilisateurs
-	users := ReadUsers(filename)
+	users := ReadUsersFile(filename)
 	for _, user := range users {
 
 		// Recupere les données de l'utilisateur d'identifiant
@@ -55,7 +81,7 @@ func ReadUser(identifiant string, filename string) *obj.User {
 func ReadUserFromEmail(email string, filename string) *obj.User {
 
 	// Cherche dans Table des utilisateurs
-	users := ReadUsers(filename)
+	users := ReadUsersFile(filename)
 	for _, user := range users {
 
 		// Recupere les données de l'utilisateur d'identifiant
@@ -69,7 +95,7 @@ func ReadUserFromEmail(email string, filename string) *obj.User {
 func WriteUser(data *obj.User, filename string) error {
 
 	// Cherche dans Table des utilisateurs
-	users := ReadUsers(filename)
+	users := ReadUsersFile(filename)
 	for i := range users {
 
 		// Recupere les données de l'utilisateur d'identifiant
@@ -79,9 +105,20 @@ func WriteUser(data *obj.User, filename string) error {
 			users[i].MotDePasse = data.MotDePasse
 			users[i].NomComplet = data.NomComplet
 			users[i].Roles = data.Roles
-			return WriteUsers(users, filename)
+			return WriteUsersFile(users, filename)
 		}
 	}
 	// Non trouvé l'ajoute
-	return WriteUsers(append(users, *data), filename)
+	return WriteUsersFile(append(users, *data), filename)
+}
+
+// Recuperer du csv
+func DecodeCsv(r *http.Request, obj interface{}) []obj.User {
+	return ReadUsers(r.Body)
+}
+
+// Envoyer du csv
+func EncodeCsv(w http.ResponseWriter, tab []obj.User) {
+	w.Header().Set("Content-Type", "text/csv")
+	WriteUsers(w, tab)
 }

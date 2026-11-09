@@ -18,12 +18,19 @@ func ReadUsersRights(filename string) []UserRights {
 
 	// TODO  lecture par table markdown
 
+	nb := 0
 	tab := readCsv(filename)
 	users := make([]UserRights, len(tab))
-	for i, t := range tab {
-		users[i] = UserRights{t[0], t[1], t[2:]}
+	for _, t := range tab {
+		if t[0] != "" && t[1] != "" {
+			users[nb] = UserRights{t[0], t[1], t[2:]}
+			nb++
+		}
 	}
-	return users
+	// Reduit l'allocation si beaucoup de lignes vides
+	newS := make([]UserRights, nb)
+	copy(newS, users)
+	return newS
 }
 
 func WriteUsersRights(users []UserRights, filename string) error {

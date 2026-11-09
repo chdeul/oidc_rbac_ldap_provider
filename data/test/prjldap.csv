@@ -1,5 +1,5 @@
-Mon_Projet ; directory ; ldap
-User       ;  admin  ; users
-User       ;  onze   ; users
-User       ;  douze  ; groups
-User       ;  treize ;  
+Mon_Projet , directory , ldap
+User       ,  admin  , user
+User       ,  onze   , user
+User       ,  douze  , group
+User       ,  treize ,  

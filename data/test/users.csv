@@ -1,11 +1,11 @@
-#id;identifiant;password;mail;nom complet;roles
-1;admin;chdeul;root@localhost.loc;Super Administrateur;Administrateur
-11;onze;aaaaaa1;onze@localhost.loc;Onze ONZE;Chef
-12;douze;bbbbbb2;douze@localhost.loc;Douze DOUZE;Edition
-13;treize;cccccc3;treize@localhost.loc;Treize TREIZE;Edition
-14;quatorze14;ffffff4;quatorze@xxxx.com;Quatorze QUATORZE;
-15;quinze;dddddd5;quinze@xxxx.com;Quinze QUINZE;
-16;seize;$1$4a0lqzV/$DI86o.DczkP4/rR3hS9XQ/;seize@yyyy.com;Seize SEIZE;
+#nom complet,mail,identifiant,password,id,roles
+Super Administrateur,root@localhost.loc,admin,chdeul,1,Administrateur
+Onze ONZE,onze@localhost.loc,onze,aaaaaa1,11,Chef
+Douze DOUZE,douze@localhost.loc,douze,bbbbbb2,12,Edition
+Treize TREIZE,treize@localhost.loc,treize,cccccc3,13,Edition
+Quatorze QUATORZE,quatorze@xxxx.com,quatorze14,ffffff4,14,
+Quinze QUINZE,quinze@xxxx.com,quinze,dddddd5,15,
+Seize SEIZE,seize@yyyy.com,seize,$1$4a0lqzV/$DI86o.DczkP4/rR3hS9XQ/,16,
 
 # chdeul => {CRYPT}$6$cLKRN0qVUpapeQG2$qsM6Ag1coH09zEHSXALioZw6CC6dpUrWWbESwfPbD1Z53hAtXJgUJ20VmI7/lf4sGWMtkoFxXHIO3k08dIcqN/
 #           {MD5}$1$naDCCXSM$lM0Rmx6IWBfb8WlY3TrAR0

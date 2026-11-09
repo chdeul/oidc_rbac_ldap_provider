@@ -68,7 +68,7 @@ func (de *DestLdap) GetRole(prj *obj.Project, user *obj.User) string {
 func (de *DestLdap) CreateRole(prj *obj.Project, user *obj.User, role string) error {
 
 	// role du projet : ajoute l'user au groupe du nom du projet
-	if role == "groups" {
+	if role == "group" {
 		projname := prj.Identifiant
 		members := bases.LdapGetGroup(de.ldap, projname)
 		if members == nil {
@@ -83,7 +83,7 @@ func (de *DestLdap) CreateRole(prj *obj.Project, user *obj.User, role string) er
 			tools.Debug("LdapAddMember %s %s", projname, user.Identifiant)
 		}
 		// role "autre" que projet et users  : ajoute l'user à ce groupe "autre"
-	} else if role != "users" && role != "" {
+	} else if role != "user" && role != "" {
 		members := bases.LdapGetGroup(de.ldap, role)
 		if members == nil {
 			// Crée le groupe pour l'ajouter membre

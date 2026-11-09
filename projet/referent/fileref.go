@@ -24,7 +24,7 @@ type RefFile struct {
 func NewRefFile() (*RefFile, error) {
 
 	// Lire le fichier csv
-	tab := tables.ReadUsers(tools.Cfg.Ref.Path)
+	tab := tables.ReadUsersFile(tools.Cfg.Ref.Path)
 	max := len(tab)
 
 	// Verifier syntaxe des usernames
@@ -72,6 +72,7 @@ func (rf *RefFile) SearchUser(ident string) []obj.User {
 	tab := make([]obj.User, 0)
 	for _, u := range rf.users {
 		if tools.Match(re, u.Identifiant) {
+			u.MotDePasse = ""
 			tab = append(tab, u)
 		}
 	}
@@ -89,6 +90,7 @@ func (rf *RefFile) SearchGroup(ident string) []obj.User {
 	tab := make([]obj.User, 0)
 	for _, u := range rf.users {
 		if tools.Match(re, u.Roles) {
+			u.MotDePasse = ""
 			tab = append(tab, u)
 		}
 	}

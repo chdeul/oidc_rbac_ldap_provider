@@ -2,6 +2,7 @@ package tables
 
 import (
 	"encoding/csv"
+	"io"
 	"log"
 	"main/tools"
 	"os"
@@ -9,7 +10,6 @@ import (
 )
 
 func readCsv(filename string) [][]string {
-
 	file, err := os.Open(tools.CfgFilename(filename))
 	if err != nil {
 		log.Println(err)
@@ -17,8 +17,24 @@ func readCsv(filename string) [][]string {
 	}
 	defer file.Close()
 
-	reader := csv.NewReader(file)
-	reader.Comma = ';'
+	return readCsvStream(file)
+}
+
+func writeCsv(filename string, tab [][]string) error {
+
+	file, err := os.Create(tools.CfgFilename(filename))
+	if err != nil {
+		log.Println(err)
+	}
+	defer file.Close()
+
+	return writeCsvStream(file, tab)
+}
+
+func readCsvStream(stream io.Reader) [][]string {
+
+	reader := csv.NewReader(stream)
+	reader.Comma = ','
 	reader.Comment = '#'
 	reader.LazyQuotes = true
 	reader.TrimLeadingSpace = true
@@ -44,17 +60,11 @@ func readCsv(filename string) [][]string {
 	return tab
 }
 
-func writeCsv(filename string, tab [][]string) error {
+func writeCsvStream(stream io.Writer, tab [][]string) error {
 
-	file, err := os.Create(tools.CfgFilename(filename))
-	if err != nil {
-		log.Println(err)
-	}
-	defer file.Close()
-
-	writer := csv.NewWriter(file)
-	writer.Comma = ';'
-	err = writer.WriteAll(tab)
+	writer := csv.NewWriter(stream)
+	writer.Comma = ','
+	err := writer.WriteAll(tab)
 	if err != nil {
 		log.Println(err)
 	}

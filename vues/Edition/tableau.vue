@@ -22,8 +22,9 @@
                 fetch("/agrem/resources/projet.csv")
                   .then(r => r.text())
                   .then(text => {
-                    const rows = text.trim().split("\n").map(row => row.split(";"))
-                    const newr = rows.map(row => row.map(s => ((s[0] === '"') ? s.slice(1, -1) : s) ))
+                    const rows = text.trim().split("\n").filter(line => !line.startsWith(",,"))
+                    const frows = rows.map(row => row.split(","))
+                    const newr = frows.map(row => row.map(s => ((s[0] === '"') ? s.slice(1, -1) : s) ))
                     this.head = newr[0]
                     this.data = newr.slice(1)
                   })

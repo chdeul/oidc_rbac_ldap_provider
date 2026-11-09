@@ -63,7 +63,7 @@ func Route(method, pattern string, handler http.HandlerFunc, profils *string) ro
 }
 
 // Extrait un element (matching) de la route
-func getField(r *http.Request, index int) string {
+func GetField(r *http.Request, index int) string {
 	fields := r.Context().Value(myReqCtx{}).(agremReqCtx).path
 	return fields[index]
 }
