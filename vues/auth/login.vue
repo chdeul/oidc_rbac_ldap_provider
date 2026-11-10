@@ -113,7 +113,7 @@
             }
         } 
     })
-//# sourceURL=http://localhost:8088/vues/Auth/login.vue
+//# sourceURL=http://localhost:8088/vues/auth/login.vue
 </script>
 
 <template id="ui-login">

@@ -9,6 +9,9 @@ import (
 
 func LectureProjet(users []obj.Right) {
 
+	// catch exception
+	tools.Recover()
+
 	// Droits lus dans un .csv
 	header := users[0]
 
@@ -22,7 +25,11 @@ func LectureProjet(users []obj.Right) {
 
 	// Projet dans chaque outil destination
 	projet := searchProjects(header.Type, dest)
+	if tools.Check(projet) {
 
+		// Sauvegarde locale du projet.csv pour batch et ihm
+		storeCsvProject(users)
+	}
 	// Pour chaque utilisateur ou groupe déclaré (sauf entete)
 	for _, up := range users[1:] {
 
@@ -198,6 +205,7 @@ func updateRights(projet []*obj.Project, user *obj.User, dest []destinat.Destina
 
 }
 
+/*
 // Notifie, voire supprime des droits non déclarés
 func removeRights(d destinat.Destination, prj *obj.Project, users []obj.Right) {
 
@@ -232,4 +240,6 @@ func removeRights(d destinat.Destination, prj *obj.Project, users []obj.Right) {
 			// d.DeleteRole(projet[i], user)
 		}
 	}
+
 }
+*/

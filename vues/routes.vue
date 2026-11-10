@@ -14,7 +14,9 @@
       { path: '/vue/admin/ldapag', component: app.component("ui-ldapag") },
       { path: '/vue/admin/refbrowse', component: app.component("ui-refbrowse") },
       { path: '/vue/admin/outils', component: app.component("ui-outils") },
-      { path: '/vue/admin/projet', component: app.component("ui-projet") },
+
+      // Ediion projet
+      { path: '/vue/edition/projet', component: app.component("ui-projet") },
 
       // Default : home
       { path: '/', redirect: '/vue/home' },

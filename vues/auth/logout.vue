@@ -37,7 +37,7 @@
         }
 
     })
-//# sourceURL=http://localhost:8088/vues/Auth/logout.vue
+//# sourceURL=http://localhost:8088/vues/auth/logout.vue
 </script>
 
 <template id="ui-logout">

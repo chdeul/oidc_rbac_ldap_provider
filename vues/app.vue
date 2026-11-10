@@ -144,7 +144,8 @@
             }
         }
     }
-
+    app.component( 'easy-data-table', window['vue3-easy-data-table'] )
+        
 //# sourceURL=http://localhost:8088/vues/app.vue
 </script>
 

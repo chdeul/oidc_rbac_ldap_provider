@@ -2,7 +2,7 @@
     app.component("ui-header", {
         template: "#ui-header"
    });
-//# sourceURL=http://localhost:8088/vues/Public/header.vue
+//# sourceURL=http://localhost:8088/vues/public/header.vue
 </script>
 
 <template id="ui-header">
@@ -32,7 +32,6 @@
                 <li><router-link to="/vue/admin/ldapag" class="dropdown-item">Ldap agréments</router-link></li>
                 <li><router-link to="/vue/admin/refbrowse" class="dropdown-item">Annuaire</router-link></li>
                 <li><router-link to="/vue/admin/outils" class="dropdown-item">Outils</router-link></li>
-                 <li><router-link to="/vue/admin/projet" class="dropdown-item">Projet</router-link></li>
               </ul>
            </li>
 
@@ -40,6 +39,7 @@
               <span class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown">Edition</span>
               <ul class="dropdown-menu  dropdown-menu-end">
                 <li><router-link to="/vue/home" class="dropdown-item">Accueil</router-link></li>
+                <li><router-link to="/vue/edition/projet" class="dropdown-item">Projet</router-link></li>
               </ul>
            </li>
 
