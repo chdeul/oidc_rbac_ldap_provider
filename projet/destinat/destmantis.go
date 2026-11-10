@@ -161,7 +161,7 @@ func (de *DestMantis) SearchUsers(ident string) []*obj.User {
 	var tab []*obj.User
 	if resp.StatusCode() == 200 { // Search ok
 		for _, p := range result.Users {
-			tab = append(tab, obj.NewUser(strconv.Itoa(p.Id), p.Name, p.RealName, p.Email, p.Level.Name))
+			tab = append(tab, obj.NewUser(strconv.Itoa(p.Id), p.Name, "", p.RealName, p.Email, p.Level.Name))
 		}
 	} else {
 		tools.Debug("Recherche utilisateur mantis %d", resp.StatusCode())

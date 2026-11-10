@@ -9,26 +9,49 @@ import (
 	"strings"
 )
 
-func readCsv(filename string) [][]string {
-	file, err := os.Open(tools.CfgFilename(filename))
-	if err != nil {
-		log.Println(err)
+func readCsv(data any) [][]string {
+
+	var stream io.Reader
+	if filename, ok := data.(string); ok {
+
+		file, err := os.Open(tools.CfgFilename(filename))
+		if err != nil {
+			log.Println(err)
+			return nil
+		}
+		defer file.Close()
+		stream = file
+
+	} else if stream, ok = data.(io.Reader); ok {
+		// already
+
+	} else {
+		tools.Fatal("Bad readCsv parameter")
 		return nil
 	}
-	defer file.Close()
-
-	return readCsvStream(file)
+	return readCsvStream(stream)
 }
 
-func writeCsv(filename string, tab [][]string) error {
+func writeCsv(out any, tab [][]string) error {
 
-	file, err := os.Create(tools.CfgFilename(filename))
-	if err != nil {
-		log.Println(err)
+	var stream io.Writer
+	if filename, ok := out.(string); ok {
+
+		stream, err := os.Create(tools.CfgFilename(filename))
+		if err != nil {
+			log.Println(err)
+		}
+		defer stream.Close()
+
+	} else if stream, ok = out.(io.Writer); ok {
+		// already
+
+	} else {
+		tools.Fatal("Bad writeCsv parameter")
+		return nil
 	}
-	defer file.Close()
 
-	return writeCsvStream(file, tab)
+	return writeCsvStream(stream, tab)
 }
 
 func readCsvStream(stream io.Reader) [][]string {

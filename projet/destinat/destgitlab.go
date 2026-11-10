@@ -363,7 +363,7 @@ func (de *DestGitlab) SearchUsers(ident string) []*obj.User {
 		// Conversion en Table rendue
 		tab := make([]*obj.User, len(result))
 		for i, p := range result {
-			tab[i] = obj.NewUser(strconv.Itoa(p.Id), p.Username, p.Name, p.Email, "")
+			tab[i] = obj.NewUser(strconv.Itoa(p.Id), p.Username, "", p.Name, p.Email, "")
 		}
 		return tab
 	}

@@ -55,6 +55,7 @@ var routes = []route{
 
 	// REST Projet: prise en compte
 	Route("GET", "projet", apiProjet, &obj.Edition),
+	Route("POST", "projet", apiProjet, &obj.Edition),
 }
 
 // Declare une route

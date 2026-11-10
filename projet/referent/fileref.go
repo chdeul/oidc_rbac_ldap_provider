@@ -24,7 +24,7 @@ type RefFile struct {
 func NewRefFile() (*RefFile, error) {
 
 	// Lire le fichier csv
-	tab := tables.ReadUsersFile(tools.Cfg.Ref.Path)
+	tab := tables.ReadUsers(tools.Cfg.Ref.Path)
 	max := len(tab)
 
 	// Verifier syntaxe des usernames

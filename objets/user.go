@@ -9,6 +9,6 @@ type User struct {
 	Roles       string // Roles (title), Services, divers  ex:  Manager,Security, propre à chaque outil
 }
 
-func NewUser(id, ident, nom, mail, roles string) *User {
-	return &User{Uid: id, Identifiant: ident, NomComplet: nom, AdresseMail: mail, Roles: roles}
+func NewUser(id, ident, mdp, nom, mail, roles string) *User {
+	return &User{Uid: id, Identifiant: ident, MotDePasse: mdp, NomComplet: nom, AdresseMail: mail, Roles: roles}
 }

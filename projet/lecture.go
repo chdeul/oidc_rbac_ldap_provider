@@ -4,19 +4,12 @@ import (
 	obj "main/objets"
 	"main/projet/destinat"
 	"main/projet/referent"
-	"main/tables"
 	"main/tools"
 )
 
-// TODO  Réception de droits projet par API
-// TODO  Sauvegarde / centralisation de droits projet par API
-// TODO  GUI Web d'édtion de droits projet
-// TODO  Page html, markdown, descrivant le projet et les liens
-
-func LectureProjet(filename string) {
+func LectureProjet(users []obj.Right) {
 
 	// Droits lus dans un .csv
-	users := tables.ReadUsersRights(filename)
 	header := users[0]
 
 	// Referentiel d'utilisateur indiqué
@@ -206,7 +199,7 @@ func updateRights(projet []*obj.Project, user *obj.User, dest []destinat.Destina
 }
 
 // Notifie, voire supprime des droits non déclarés
-func removeRights(d destinat.Destination, prj *obj.Project, users []tables.UserRights) {
+func removeRights(d destinat.Destination, prj *obj.Project, users []obj.Right) {
 
 	// Recherche tous les utilisateurs avec droits sur ce projet dans l'outil d
 	ud := d.SearchUsersRole(prj)

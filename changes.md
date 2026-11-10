@@ -5,7 +5,7 @@
 
 * Browser et éditer le ldap  (__fait__)
 
-* Edition dans Feuille Calc (__en cours__)
+* Edition dans Feuille Calc (__fait__)
 
 * Création, Modifs des rbac projet
 
@@ -62,12 +62,12 @@
   - any sql base        (__en cours__)
   - etc.
 
-* Réception des rbac projets via REST
+* Réception des rbac projets via REST  (__en cours__)
 
 * Envoi : via Gitlab ci, alfresco notif, oOo, ...
 
-* Stockage Bdd Sqlite,postgres
-  - rbac projets
+* Stockage Bdd Sqlite,postgres   
+  - rbac projets         (__en cours__)
   - projets, pages
   - config ihm
 

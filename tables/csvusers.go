@@ -3,13 +3,8 @@ package tables
 import (
 	"io"
 	obj "main/objets"
-	"net/http"
+	"main/tools"
 )
-
-func NewUser(uid, ident, mp, nc, am, rt string) *obj.User {
-	u := obj.User{Uid: uid, Identifiant: ident, MotDePasse: mp, NomComplet: nc, AdresseMail: am, Roles: rt}
-	return &u
-}
 
 func userToStrings(user obj.User) []string {
 	t := make([]string, 6)
@@ -24,8 +19,22 @@ func userToStrings(user obj.User) []string {
 	return t
 }
 
-func ReadUsers(into io.Reader) []obj.User {
-	tab := readCsvStream(into)
+func ReadUsers(data any) []obj.User {
+
+	var tab [][]string
+	if filename, ok := data.(string); ok {
+		tab = readCsv(filename)
+
+	} else if tab, ok = data.([][]string); ok {
+		// already
+
+	} else if stream, ok := data.(io.Reader); ok {
+		tab = readCsv(stream)
+
+	} else {
+		tools.Fatal("Bad ReadUsersRights parameter")
+		return nil
+	}
 	users := make([]obj.User, len(tab))
 	for i, t := range tab {
 		// See order userToStrings
@@ -34,91 +43,11 @@ func ReadUsers(into io.Reader) []obj.User {
 	return users
 }
 
-func WriteUsers(out io.Writer, users []obj.User) error {
+func WriteUsers(users []obj.User, out any) error {
 	tab := make([][]string, len(users)+1)
 	tab[0] = []string{"#nom complet", "mail", "identifiant", "password", "id", "roles titres"}
 	for i, user := range users {
 		tab[i+1] = userToStrings(user)
 	}
-	return writeCsvStream(out, tab)
-}
-
-func ReadUsersFile(filename string) []obj.User {
-
-	tab := readCsv(filename)
-	users := make([]obj.User, len(tab))
-	for i, t := range tab {
-		// See order userToStrings
-		users[i] = obj.User{Uid: t[4], Identifiant: t[2], MotDePasse: t[3], AdresseMail: t[1], NomComplet: t[0], Roles: t[5]}
-	}
-	return users
-}
-
-func WriteUsersFile(users []obj.User, filename string) error {
-
-	tab := make([][]string, len(users)+1)
-	tab[0] = []string{"#nom complet", "mail", "identifiant", "password", "id", "roles titres"}
-	for i, user := range users {
-		tab[i+1] = userToStrings(user)
-	}
-	return writeCsv(filename, tab)
-}
-
-func ReadUser(identifiant string, filename string) *obj.User {
-
-	// Cherche dans Table des utilisateurs
-	users := ReadUsersFile(filename)
-	for _, user := range users {
-
-		// Recupere les données de l'utilisateur d'identifiant
-		if user.Identifiant == identifiant {
-			return &user
-		}
-	}
-	return nil
-}
-
-func ReadUserFromEmail(email string, filename string) *obj.User {
-
-	// Cherche dans Table des utilisateurs
-	users := ReadUsersFile(filename)
-	for _, user := range users {
-
-		// Recupere les données de l'utilisateur d'identifiant
-		if user.AdresseMail == email {
-			return &user
-		}
-	}
-	return nil
-}
-
-func WriteUser(data *obj.User, filename string) error {
-
-	// Cherche dans Table des utilisateurs
-	users := ReadUsersFile(filename)
-	for i := range users {
-
-		// Recupere les données de l'utilisateur d'identifiant
-		if users[i].Identifiant == data.Identifiant {
-			users[i].Uid = data.Uid
-			users[i].AdresseMail = data.AdresseMail
-			users[i].MotDePasse = data.MotDePasse
-			users[i].NomComplet = data.NomComplet
-			users[i].Roles = data.Roles
-			return WriteUsersFile(users, filename)
-		}
-	}
-	// Non trouvé l'ajoute
-	return WriteUsersFile(append(users, *data), filename)
-}
-
-// Recuperer du csv
-func DecodeCsv(r *http.Request, obj interface{}) []obj.User {
-	return ReadUsers(r.Body)
-}
-
-// Envoyer du csv
-func EncodeCsv(w http.ResponseWriter, tab []obj.User) {
-	w.Header().Set("Content-Type", "text/csv")
-	WriteUsers(w, tab)
+	return writeCsv(out, tab)
 }

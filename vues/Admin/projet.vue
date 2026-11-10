@@ -15,7 +15,7 @@
             prendre: function() {
 
                // Appel serveur 
-                myAxios.get("/projet").then( (rep) => {
+                myAxios.get("projet?data=http://localhost:8088/agrem/resources/projet.csv").then( (rep) => {
 
                 }).catch( (err) => {
 

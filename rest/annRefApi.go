@@ -39,7 +39,8 @@ func apiAnnRefRead(w http.ResponseWriter, r *http.Request) {
 	if group != "" {
 		users := ref.SearchGroup(group)
 		if csv {
-			tables.EncodeCsv(w, users)
+			w.Header().Set("Content-Type", "text/csv")
+			tables.WriteUsers(users, w)
 		} else {
 			tools.Encode(w, users)
 		}
@@ -52,7 +53,8 @@ func apiAnnRefRead(w http.ResponseWriter, r *http.Request) {
 	}
 	users := ref.SearchUser(id)
 	if csv {
-		tables.EncodeCsv(w, users)
+		w.Header().Set("Content-Type", "text/csv")
+		tables.WriteUsers(users, w)
 	} else {
 		tools.Encode(w, users)
 	}
