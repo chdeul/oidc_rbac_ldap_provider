@@ -28,7 +28,7 @@ func LectureProjet(users []obj.Right) {
 	if tools.Check(projet) {
 
 		// Sauvegarde locale du projet.csv pour batch et ihm
-		storeCsvProject(users)
+		StoreCsvProject(users)
 	}
 	// Pour chaque utilisateur ou groupe déclaré (sauf entete)
 	for _, up := range users[1:] {

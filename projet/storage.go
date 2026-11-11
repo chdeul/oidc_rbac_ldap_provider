@@ -6,16 +6,16 @@ import (
 	"main/tools"
 )
 
-func storeCsvProject(users []obj.Right) {
+func StoreCsvProject(users []obj.Right) {
 
 	// TODO : nom abrégé     Nom projet  to filename
-	projname := users[0].Name
+	projname := users[0].Type
 	filename := tools.CfgFilename("data/projects/" + projname + ".csv")
 
 	tables.WriteRights(users, filename)
 }
 
-func loadCsvProject(projname string) []obj.Right {
+func LoadCsvProject(projname string) []obj.Right {
 
 	// TODO : nom abrégé     Nom projet  to filename
 	filename := tools.CfgFilename("data/projects/" + projname + ".csv")

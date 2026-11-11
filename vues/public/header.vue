@@ -84,7 +84,7 @@
   </header>
 </template> 
 
-<style scoped>
+<style>
 .navbar-brand {
   padding-top : 0px;
   padding-bottom : 0px;

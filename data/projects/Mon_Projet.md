@@ -7,10 +7,10 @@
 <br>
 
 <!--agrem----------------------------------------------------------------->
-|   Agrements   |   directory   |     ldap    |    gitlab    |   mantis   |
+|   Mon_Projet  |   directory   |     ldap    |    gitlab    |   mantis   |
 |:--------------|:--------------|:------------|:-------------|:-----------|
 |    User       |    tlopez     |   unGroupe  |   Reporter   |            |
-|    User       |    antoine    |   groups    |  Maintainer  |   manager  |
+|    User       |    antoine    |    group    |  Maintainer  |   manager  |
 <!------------------------------------------------------------------------>
 
 ## Fin

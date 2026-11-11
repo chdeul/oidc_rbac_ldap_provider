@@ -37,11 +37,10 @@ func writeCsv(out any, tab [][]string) error {
 	var stream io.Writer
 	if filename, ok := out.(string); ok {
 
-		stream, err := os.Create(tools.CfgFilename(filename))
-		if err != nil {
-			log.Println(err)
-		}
-		defer stream.Close()
+		file, err := os.Create(tools.CfgFilename(filename))
+		tools.CheckError(err, "Création projet.csv")
+		defer file.Close()
+		stream = file
 
 	} else if stream, ok = out.(io.Writer); ok {
 		// already

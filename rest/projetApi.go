@@ -1,6 +1,7 @@
 package rest
 
 import (
+	obj "main/objets"
 	"main/projet"
 	"main/tables"
 	"main/tools"
@@ -18,8 +19,15 @@ func apiProjet(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 
 	case http.MethodGet:
+		// Recupere le nom du projet
+		name := r.URL.Query().Get("name")
+		if !tools.Check(name, "No name in query of project") {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
 		// Return json table of project
-		w.WriteHeader(http.StatusOK)
+		tab := projet.LoadCsvProject(name)
+		tools.Encode(w, tab)
 
 	case http.MethodPut:
 		// recupere une url en query
@@ -44,8 +52,14 @@ func apiProjet(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 
 	case http.MethodPost:
-		// Analyze the project table from body
-		tab := tables.ReadRights(r.Body)
+		var tab []obj.Right
+		if r.Header.Get("Content-Type") == "application/json" {
+			// Already json table from body
+			tools.Decode(r, &tab)
+		} else {
+			// Analyze the project csv table from body
+			tab = tables.ReadRights(r.Body)
+		}
 		// Exec the project table
 		projet.LectureProjet(tab)
 
