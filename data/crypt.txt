@@ -1,0 +1,7 @@
+openldap  crypted password prefix supported
+
+  {SSHA}   salt sha one
+  {SHA}    sha one
+  {SMD5}   salt md5
+  {MD5}    md5
+  {CRYPT}  sha256 512 etc

@@ -56,6 +56,7 @@ var routes = []route{
 	// REST Projet: prise en compte
 	Route("GET", "projet", apiProjet, &obj.Edition),
 	Route("POST", "projet", apiProjet, &obj.Edition),
+	Route("PUT", "projet", apiProjet, &obj.Edition),
 }
 
 // Declare une route
@@ -100,7 +101,7 @@ func ServeRestApi(w http.ResponseWriter, r *http.Request) {
 			reqCtx := agremReqCtx{path: matches[1:]}
 
 			// Jeton d'auth présent Dans Header ou Cookie
-			jwtToken := tools.ExtractJwt(r)
+			jwtToken := tools.ExtractToken(r)
 			if jwtToken != "" {
 				// Decode le jeton, et teste si match le profil requis pour cette url
 				reqCtx.user = checkUtilisateur(jwtToken, route.profils)
@@ -130,8 +131,10 @@ func ServeRestApi(w http.ResponseWriter, r *http.Request) {
 		// Trouvé mauvais verbe
 		w.Header().Set("Allow", strings.Join(allow, ", "))
 		http.Error(w, "Verbe non autorisé", http.StatusMethodNotAllowed)
+		tools.Warn("Verbe non autorisé %s : %s", r.Method, r.URL.Path)
 		return
 	}
 	// Url Non trouvée
+	tools.Warn("Path non autorisé %s : %s", r.Method, r.URL.Path)
 	http.NotFound(w, r)
 }

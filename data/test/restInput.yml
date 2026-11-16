@@ -1,22 +1,53 @@
-HeadAuth: "string"
-BaseUrl:  "string"
-CertFile: "string"
-Insecure: bool
-Routes:  
-  Source:
-    Method: "string"
-    Path:   "string"
-    Header: 
-      - xxx : xxx
-  Target:
-  - Method:    "string"
-    URL:       "string"
-    Header:    
-    - xxx : xxx
-    Body:      
-    - xxx : any
-    JsScript:  "string"
-    MapArray:  "string"
-    MapObject: 
-    - xxx : any
+# target API, avec token d'auth
+baseurl:  "http://localhost:8080/api/rest/"
+headauth: "2YlTDV80nt8ZQhleYfi_CLfoyLZ1gR1T"
+certfile: ""
+insecure: false
+
+# Test api rest mantis
+routes:  
+  - source:
+      method: GET
+      path : "test/{id}"
+    target:
+    - method: GET
+      url: "users/{id}"       
+      header: 
+        Authorization: "{token}"
+      mapobject:
+        Uid: "users.0.id"
+        Identifiant: "users.0.name"
+        NomComplet: "users.0.real_name"
+        AdresseMail: "users.0.email"
+        Roles: "users.0.access_level.name"
+  # test de retour tableau
+  - source:
+      method: GET
+      path : "test2"
+    target:
+    - method: GET
+      url: "projects/{prj}/users"       
+      maparray: "users"
+      mapobject:
+        Uid: "id"
+        Identifiant: "name"
+        NomComplet: "real_name"
+        AdresseMail: "email"
+        Roles: "access_level.label"
+  # test avec extraction js 
+  - source:
+      method: GET
+      path : test3/test2?name={prj}
+    target:
+    - method: GET
+      url: "projects/{prj}/users"       
+      jsscript: "data/test/restInput.js"
+      mapobject:
+        Uid: "Uid"
+        Identifiant: "Identifiant"
+        NomComplet: "NomComplet"
+        AdresseMail: "AdresseMail"
+        Roles: "Roles"
+
+
 

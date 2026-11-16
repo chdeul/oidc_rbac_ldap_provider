@@ -5,7 +5,12 @@
 
         data () {
             return {
+
+                // Projects names list
+                prjNames : [], 
+
                 // Projet, raw data
+                name: "",
                 projet : [],
                 tools: [],
 
@@ -15,14 +20,29 @@
                 itemEdit: {},
             }
         },
+        created () {
+            // Load list of projects, that current user is manager
+            this.prjNames = [ "Mon_Projet", "Autre_Projet" ]
+        
+            // Get row data from backend
+            myAxios.get("projet").then( (rep) => {
 
-        mounted() {
-            this.load()
+                // Check and store raw data : not empty
+                this.prjNames = rep.data
+                if ( this.prjNames.length == 0 ) {
+                    message( "Aucun projet que vous pouvez gérer !" )
+                    return
+                }
+
+            }).catch( (err) => {
+                message( "Erreur, liste des projets non chargée !")
+            })
         },
 
         methods : { 
 
             init() {
+                // Pas de projet chargé
                 this.projet = []
                 this.items = []
                 this.headers = []
@@ -30,12 +50,14 @@
                 this.itemEdit = {}
             },
 
-            load() {
+            loadProject(event) {
                 // Clear
                 this.init()
-
+                // Get slected projet
+                this.name = event.target.value
+                if ( !this.name ) return
                 // Get row data from backend
-                myAxios.get("projet?name=Mon_Projet").then( (rep) => {
+                myAxios.get("projet?name="+this.name).then( (rep) => {
 
                     // Check and store raw data : not empty
                     this.projet = rep.data
@@ -161,8 +183,13 @@
 <template id="ui-projet">
 
     <div class="col-md-12 marge-haut" >
-
-        <h4>Table des droits du projet</h4>
+        <div>
+            <select class="" style="float:right" v-model="name" @change="loadProject">
+                <option value="" disabled>Select...</option>
+                <option v-for="prj in prjNames" :key="prj" :value="prj">{{prj}}</option>
+            </select>
+            <h4>Table des droits du projet</h4>
+        </div>
         <easy-data-table id="table" :headers="headers" :items="items">
 
             <template #header-edit="header">
@@ -182,10 +209,10 @@
         </easy-data-table>
 
         <div class="col-md-12 marge-haut" >
-            <div class="col-md-3 btn-group">
-            <button type="button" class="btn btn-primary" @click="execUserRights()">Prendre en compte</button>  
-            <button type="button" class="btn btn-warning" @click="load()">Annuler</button>  
-            </div>
+            
+            <button type="button" class="marge btn btn-primary" @click="execUserRights()">Prendre en compte</button>  
+            <button type="button" class="marge btn btn-secondary" @click="load()">Annuler</button>  
+            
         </div>
 
     </div>

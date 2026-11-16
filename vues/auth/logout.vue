@@ -3,7 +3,7 @@
 
         template : "#ui-logout",
 
-        emits : [ "logged" ],
+        inject: ['majLogged'],
      
         data : function() {
             return {
@@ -16,7 +16,7 @@
             myAxios.delete( "/auth").then( (rep) => {
 
                 // puis Côté vue.js si succès backend 
-                this.$emit( "logged", null, null, null ) 
+                this.majLogged( null, null, null ) 
 
                 this.oidcLogoutUrl = rep.data
             })

@@ -20,7 +20,7 @@ UpdateRole(prj *obj.Project, user *obj.User, , role string) error
 DeleteRole(prj *obj.Project, user *obj.User, , role string) error
 */
 
-func openOutil(url, prj string) destinat.Destination {
+func openOutil(url, _ string) destinat.Destination {
 
 	mots := strings.Split(url, "/")
 	if len(mots) > 0 {

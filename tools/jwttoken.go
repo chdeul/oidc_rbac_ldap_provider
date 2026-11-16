@@ -19,22 +19,43 @@ const (
 // Var globale pour client oidc local
 var SsoLogoutUrl string
 
-func ExtractJwt(r *http.Request) string {
+func ExtractToken(r *http.Request) string {
 
 	// Jeton d'auth présent Dans Header ou Cookie
-	jwtToken := r.Header.Get("Authorization")
-	if jwtToken == "" {
+	token := r.Header.Get("Authorization")
+	if token == "" {
 		cook, err := r.Cookie("JWTAgremToken")
 		if err == nil {
-			jwtToken = cook.Value
+			token = cook.Value
 		}
 	}
-	if jwtToken != "" {
-		jwtToken = strings.Replace(jwtToken, "Bearer ", "", 1)
+	if token != "" {
+		token = strings.Replace(token, "Bearer ", "", 1)
 	}
-	return jwtToken
+	return token
 }
 
+// Agrement personal access token ( n months, no-info, for API, header  )
+func CreateAgPat(ident, profil string, expdate uint64) (string, error) {
+
+	// TODO  random and save -> Ldap -> with user and profil and exp date
+	return "agpat-1234567890AbcDefGhij", nil
+}
+
+// Parse Agrement personal access token
+func parseAgPat(tokenString string) (ident, profil, oidcToken string) {
+
+	// TODO  random -> Ldap -> user, profil, out of date ?
+	if strings.HasPrefix(tokenString, "agpat-") {
+
+		// user, profil, oidc:nothing
+		return "api_client", "Edition", ""
+	}
+	// no authorization
+	return "", "", ""
+}
+
+// Agrement JWT token ( 12h max, visible info, signed, for web ui, cookie or header )
 func CreateToken(ident, profil, oidcToken string) (string, error) {
 
 	secret := Cfg.Server.TokenSecret
@@ -55,6 +76,11 @@ func CreateToken(ident, profil, oidcToken string) (string, error) {
 }
 
 func ParseToken(tokenString string) (ident, profil, oidcToken string) {
+
+	// If Personal access token
+	if strings.HasPrefix(tokenString, "agpat-") {
+		return parseAgPat(tokenString)
+	}
 
 	secret := Cfg.Server.TokenSecret
 	if secret == "" {

@@ -62,14 +62,18 @@
 
         created : function () {
 
+            // Injected into login and logout view
+            app.provide('majLogged', this.majLogged)
+
             // Vérif si pas déjà encore logué via token
             const authData = this.decodeJwt()
             if ( authData ) {
                 if ( authData.identifiant )
-                    this.$root.majLogged( authData.identifiant, authData.profil )
+                    this.majLogged( authData.identifiant, authData.profil )
                  else
-                    this.$root.majLogged( null, null )
+                    this.majLogged( null, null )
             }
+
         },
 
         methods : {
@@ -145,7 +149,9 @@
         }
     }
     app.component( 'easy-data-table', window['vue3-easy-data-table'] )
-        
+
+    app.config.devtools = true
+    
 //# sourceURL=http://localhost:8088/vues/app.vue
 </script>
 
@@ -156,7 +162,7 @@
         <ui-header></ui-header>
         <div class="container-fluid">
             <div class="row app_padding">
-                <router-view @logged="majLogged"></router-view>
+                <router-view></router-view>
             </div>
         </div>
     </div>

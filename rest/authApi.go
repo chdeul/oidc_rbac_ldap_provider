@@ -7,8 +7,6 @@ import (
 	"net/http"
 )
 
-const usersfile string = "./data/users.csv"
-
 type formData struct {
 	Identifiant string
 	MotDePasse  string
@@ -72,8 +70,8 @@ func apiLogin(w http.ResponseWriter, r *http.Request) {
 // REST Call : logout user from token
 func apiLogout(w http.ResponseWriter, r *http.Request) {
 
-	// Jeton d'auth présent Dans Header ou Cookie
-	jwtToken := tools.ExtractJwt(r)
+	// Jeton d'auth JWT présent Dans Header ou Cookie
+	jwtToken := tools.ExtractToken(r)
 	_, _, ssotoken := tools.ParseToken(jwtToken)
 
 	// Oidc logout

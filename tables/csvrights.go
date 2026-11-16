@@ -52,11 +52,11 @@ func ReadRights(data any) []obj.Right {
 	return users
 }
 
-func WriteRights(users []obj.Right, filename string) error {
+func WriteRights(users []obj.Right, out any) error {
 
 	tab := make([][]string, len(users))
 	for i, user := range users {
 		tab[i] = RightToStrings(user)
 	}
-	return writeCsv(filename, tab)
+	return writeCsv(out, tab)
 }

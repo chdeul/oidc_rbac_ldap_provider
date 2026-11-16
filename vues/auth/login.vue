@@ -3,7 +3,7 @@
 
         template : "#ui-login",
 
-        emits : [ "logged" ],
+        inject: ['majLogged'],
 
         data () {
             return {
@@ -58,7 +58,7 @@
                     let user = rep.data
 
                     // OK, stoke le token (mot de passe) et maj user logué
-                    this.$emit( "logged", user.Identifiant, user.Profil )
+                    this.majLogged( user.Identifiant, user.Profil )
 
                     // Se souvenir update identifiant if neccessary
                     this.souvenir( this.isSouv )
@@ -144,10 +144,10 @@
             <div v-show="erreur" class="mb-3 red">
                 <span>{{erreur}}</span>
             </div>        
-            <button type="submit" class="loginmarge btn btn-primary">Connexion</button>  &nbsp;
-            <button type="button" class="loginmarge btn btn-secondary" @click="cancel">Annuler</button> &nbsp;
+            <button type="submit" class="marge btn btn-primary">Connexion</button>
+            <button type="button" class="marge btn btn-secondary" @click="cancel">Annuler</button>
             <span v-if="cfg.Oidc && !formData.RequestId" class="oidc-panel">
-                <button type="button" class="loginmarge btn btn-warning" @click="sso">Login SSO</button>
+                <button type="button" class="marge btn btn-warning" @click="sso">Login SSO</button>
             </span>
         </form>
     </div>
@@ -163,8 +163,5 @@
 }
 .oidc-panel {
     float: right;
-}
-.loginmarge {
-    margin-bottom: 8px;
 }
 </style>

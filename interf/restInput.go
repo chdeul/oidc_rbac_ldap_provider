@@ -147,7 +147,7 @@ func applyParamsToString(urlPath string, params map[string]any, enc bool) string
 	for key, val := range params {
 
 		if sval, ok := val.(string); ok {
-			if enc {
+			if enc { // encode into url
 				sval = url.QueryEscape(sval)
 			}
 			str = strings.ReplaceAll(str, "{"+key+"}", sval)
@@ -200,7 +200,7 @@ func mapObject(obj gjson.Result, mapping map[string]any) map[string]any {
 				v = "true"
 			case gjson.JSON:
 				v = o.Raw
-			default:
+			default: // error
 				v = jsonPath
 			}
 		}
